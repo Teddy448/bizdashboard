@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Set theme immediately to prevent flash of unstyled content
+        const theme = localStorage.getItem('bizDashTheme') ? JSON.parse(localStorage.getItem('bizDashTheme')) : 'system';
+        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        body.km {
+            font-family: 'Kantumruy', sans-serif;
+        }
+        .sidebar {
+            transition: width 0.3s ease-in-out;
+        }
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* For modal backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .header-gradient-border {
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(to right, #8a3ab9, #e95950, #fccc63) 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+    
+    <!-- Login/Signup Screen -->
+    <div id="auth-screen" class="hidden">
+        <!-- Auth screen content will be rendered here -->
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-screen" class="hidden h-screen">
+        <div class="flex h-full">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar bg-slate-800 text-white flex flex-col transition-all duration-300">
+                <!-- Sidebar content rendered by JS -->
+            </div>
+
+            <!-- Main Content -->
+            <div id="main-content" class="main-content flex-1 flex flex-col overflow-hidden transition-all duration-300">
+                <header class="flex justify-between items-center py-4 px-6 bg-white dark:bg-slate-800 header-gradient-border">
+                    <button id="mobile-menu-button" class="md:hidden text-gray-500 dark:text-gray-400 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                    <div class="flex items-center gap-4 ml-auto">
+                        <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
+                            <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 12.122a1 1 0 011.414 0l.707-.707a1 1 0 11-1.414-1.414l-.707.707zM15 17a1 1 0 100-2h-1a1 1 0 100 2h1zm-9.95-1.464a1 1 0 010-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" clip-rule="evenodd"></path></svg>
+                        </button>
+                        <div id="lang-switcher" class="flex items-center text-sm font-medium">
+                            <button data-lang="en" class="lang-btn px-2 py-1 rounded-l-md">EN</button>
+                            <button data-lang="km" class="lang-btn px-2 py-1 rounded-r-md">KH</button>
+                        </div>
+                        <span id="current-time" class="text-gray-600 dark:text-gray-400 text-sm md:text-base hidden sm:block"></span>
+                        <button id="logout-button" class="hidden bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-600">Logout</button>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-x-hidden overflow-y-auto">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        <!-- Page Content Goes Here -->
+                        <div id="page-dashboard" class="page"></div>
+                        <div id="page-pos" class="page hidden"></div>
+                        <div id="page-products" class="page hidden"></div>
+                        <div id="page-transactions" class="page hidden"></div>
+                        <div id="page-settings" class="page hidden"></div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modals Container -->
+    <div id="modals-container"></div>
+
+<script type="module">
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { 
+        getAuth, 
+        onAuthStateChanged,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
+    import { 
+        getFirestore, 
+        doc, 
+        getDoc, 
+        setDoc,
+        updateDoc,
+        onSnapshot,
+    } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAbpdk_2XZi5SFrz1zHFP4sdvbNMZKNcdM",
+        authDomain: "business-dashboard-81236.firebaseapp.com",
+        projectId: "business-dashboard-81236",
+        storageBucket: "business-dashboard-81236.firebasestorage.app",
+        messagingSenderId: "857191736991",
+        appId: "1:857191736991:web:31c8f9b69abbc45a2a64aa",
+    };
+
+    // Initialize Firebase
+    const firebaseApp = initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+
+const App = {
+    // STATE MANAGEMENT
+    state: {
+        currentPage: 'dashboard',
+        language: 'en',
+        theme: 'system', // 'light', 'dark', 'system'
+        isSidebarExpanded: true,
+        user: null, // To store user auth object
+        isGuest: false,
+        isLoading: true,
+        dataUnsubscribe: null, // To hold the onSnapshot listener
+        products: [],
+        transactions: [],
+        customerTypes: ['Walk-in Customer', 'Service', 'Online Purchase'],
+        pos: {
+            cart: [],
+            customer: 'Walk-in Customer',
+            discountPercent: 0,
+            shipping: 0,
+        },
+        settings: {
+            businessName: 'My Business',
+            currency: '$',
+            taxRate: 7, // Default 7%
+        }
+    },
+
+    // TRANSLATIONS
+    i18n: {
+        en: {
+            // Auth
+            login: 'Login',
+            signup: 'Sign Up',
+            email: 'Email',
+            password: 'Password',
+            loginToYourAccount: 'Login to your account',
+            dontHaveAccount: "Don't have an account?",
+            createAnAccount: 'Create an account',
+            alreadyHaveAccount: 'Already have an account?',
+            continueAsGuest: 'Continue as Guest',
+            logout: 'Logout',
+            invalidCredentials: 'Invalid email or password.',
+            emailInUse: 'This email is already in use.',
+            // Sidebar
+            bizDash: 'BizDash',
+            dashboard: 'Dashboard',
+            pos: 'Point of Sale',
+            products: 'Products',
+            transactions: 'Transactions',
+            settings: 'Settings',
+            toggleTheme: 'Toggle Theme',
+            toggleSidebar: 'Toggle Sidebar',
+            // Dashboard
+            totalIncome: 'Total Income',
+            totalExpense: 'Total Expense',
+            netProfit: 'Net Profit',
+            totalSales: 'Total Sales',
+            weeklyPerformance: 'Weekly Performance',
+            income: 'Income',
+            expense: 'Expense',
+            // POS
+            currentOrder: 'Current Order',
+            pay: 'Pay',
+            cancel: 'Cancel',
+            enterProductName: 'Enter Product Name / SKU',
+            allCategories: 'All Categories',
+            allBrands: 'All Brands',
+            cartEmpty: 'Your cart is empty.',
+            subtotal: 'Subtotal',
+            tax: 'Tax',
+            discount: 'Discount',
+            shipping: 'Shipping',
+            total: 'Total',
+            cartIsEmpty: 'Cart is empty.',
+            customerType: 'Customer / Service',
+            addNew: 'Add New',
+            // Products
+            addProduct: 'Add Product',
+            sku: 'SKU',
+            product: 'Product',
+            category: 'Category',
+            price: 'Price',
+            cost: 'Cost',
+            stock: 'Stock',
+            actions: 'Actions',
+            edit: 'Edit',
+            delete: 'Delete',
+            confirmDeleteProduct: 'Are you sure you want to delete this product?',
+            // Transactions
+            addIncome: 'Add Income',
+            addExpense: 'Add Expense',
+            all: 'All',
+            today: 'Today',
+            weekly: 'This Week',
+            monthly: 'This Month',
+            yearly: 'This Year',
+            date: 'Date',
+            type: 'Type',
+            description: 'Description',
+            amount: 'Amount',
+            noTransactions: 'No transactions found for this period.',
+            view: 'View',
+            confirmDeleteTransaction: 'Are you sure you want to delete this transaction?',
+            // Settings
+            businessName: 'Business Name',
+            currencySymbol: 'Currency Symbol',
+            taxPercentage: 'Tax (%)',
+            saveSettings: 'Save Settings',
+            settingsSaved: 'Settings saved!',
+            // Modals
+            editProduct: 'Edit Product',
+            addNewProduct: 'Add New Product',
+            addNewCustomerType: 'Add New Customer Type',
+            customerTypeName: 'Customer/Service Name',
+            productName: 'Product Name',
+            brand: 'Brand',
+            sellingPrice: 'Selling Price',
+            costPrice: 'Cost Price',
+            stockQuantity: 'Stock Quantity',
+            imageUrl: 'Image URL',
+            cancelModal: 'Cancel',
+            saveChanges: 'Save Changes',
+            add: 'Add',
+            invoice: 'Invoice',
+            invoiceNo: 'Invoice #',
+            billedTo: 'Billed To',
+            item: 'Item',
+            qty: 'Qty',
+            done: 'Done',
+            print: 'Print',
+            ok: 'OK',
+        },
+        km: {
+             // Auth
+            login: 'ចូល',
+            signup: 'ចុះឈ្មោះ',
+            email: 'អ៊ីមែល',
+            password: 'ពាក្យសម្ងាត់',
+            loginToYourAccount: 'ចូលគណនីរបស់អ្នក',
+            dontHaveAccount: "មិនទាន់មានគណនី?",
+            createAnAccount: 'បង្កើតគណនី',
+            alreadyHaveAccount: 'មានគណនីហើយ?',
+            continueAsGuest: 'បន្តជាភ្ញៀវ',
+            logout: 'ចាកចេញ',
+            invalidCredentials: 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។',
+            emailInUse: 'អ៊ីមែលនេះត្រូវបានប្រើប្រាស់រួចហើយ។',
+            // Sidebar
+            bizDash: 'BizDash',
+            dashboard: 'ផ្ទាំងគ្រប់គ្រង',
+            pos: 'កន្លែង​លក់',
+            products: 'ផលិតផល',
+            transactions: 'ប្រតិបត្តិការ',
+            settings: 'ការកំណត់',
+            toggleTheme: 'ប្ដូររចនាប័ទ្ម',
+            toggleSidebar: 'បិទ/បើកម៉ឺនុយចំហៀង',
+            // Dashboard
+            totalIncome: 'ចំណូលសរុប',
+            totalExpense: 'ចំណាយសរុប',
+            netProfit: 'ប្រាក់ចំណេញសុទ្ធ',
+            totalSales: 'ការលក់សរុប',
+            weeklyPerformance: 'លទ្ធផលប្រចាំសប្តាហ៍',
+            income: 'ចំណូល',
+            expense: 'ចំណាយ',
+            // POS
+            currentOrder: 'ការបញ្ជាទិញបច្ចុប្បន្ន',
+            pay: 'ទូទាត់',
+            cancel: 'បោះបង់',
+            enterProductName: 'បញ្ចូលឈ្មោះផលិតផល / SKU',
+            allCategories: 'គ្រប់ប្រភេទ',
+            allBrands: 'គ្រប់ម៉ាក',
+            cartEmpty: 'រទេះរបស់អ្នកនៅទទេ',
+            subtotal: 'សរុបរង',
+            tax: 'ពន្ធ',
+            discount: 'បញ្ចុះតម្លៃ',
+            shipping: 'ដឹកជញ្ជូន',
+            total: 'សរុប',
+            cartIsEmpty: 'រទេះទទេ',
+            customerType: 'អតិថិជន / សេវាកម្ម',
+            addNew: 'បន្ថែមថ្មី',
+            // Products
+            addProduct: 'បន្ថែមផលិតផល',
+            sku: 'SKU',
+            product: 'ផលិតផល',
+            category: 'ប្រភេទ',
+            price: 'តម្លៃ',
+            cost: 'ថ្លៃដើម',
+            stock: 'ក្នុងស្តុក',
+            actions: 'សកម្មភាព',
+            edit: 'កែសម្រួល',
+            delete: 'លុប',
+            confirmDeleteProduct: 'តើអ្នកប្រាកដទេថាចង់លុបផលិតផលនេះ?',
+            // Transactions
+            addIncome: 'បន្ថែមចំណូល',
+            addExpense: 'បន្ថែមចំណាយ',
+            all: 'ទាំងអស់',
+            today: 'ថ្ងៃនេះ',
+            weekly: 'សប្តាហ៍នេះ',
+            monthly: 'ខែនេះ',
+            yearly: 'ឆ្នាំនេះ',
+            date: 'កាលបរិច្ឆេទ',
+            type: 'ប្រភេទ',
+            description: 'ការពិពណ៌នា',
+            amount: 'ចំនួនទឹកប្រាក់',
+            noTransactions: 'រកមិនឃើញប្រតិបត្តិការសម្រាប់រយៈពេលនេះទេ',
+            view: 'មើល',
+            confirmDeleteTransaction: 'តើអ្នកប្រាកដទេថាចង់លុបប្រតិបត្តិការនេះ?',
+            // Settings
+            businessName: 'ឈ្មោះអាជីវកម្ម',
+            currencySymbol: 'និមិត្តសញ្ញារូបិយប័ណ្ណ',
+            taxPercentage: 'ពន្ធ (%)',
+            saveSettings: 'រក្សាទុកការកំណត់',
+            settingsSaved: 'ការកំណត់ត្រូវបានរក្សាទុក!',
+            // Modals
+            editProduct: 'កែសម្រួលផលិតផល',
+            addNewProduct: 'បន្ថែមផលិតផលថ្មី',
+            addNewCustomerType: 'បន្ថែមប្រភេទអតិថិជនថ្មី',
+            customerTypeName: 'ឈ្មោះអតិថិជន/សេវាកម្ម',
+            productName: 'ឈ្មោះ​ផលិតផល',
+            brand: 'ម៉ាក',
+            sellingPrice: 'តម្លៃលក់',
+            costPrice: 'តម្លៃ​ដើម',
+            stockQuantity: 'បរិមាណ​ក្នុង​ស្តុក',
+            imageUrl: 'URL រូបភាព',
+            cancelModal: 'បោះបង់',
+            saveChanges: 'រក្សាទុកការផ្លាស់ប្តូរ',
+            add: 'បន្ថែម',
+            invoice: 'វិក័យប័ត្រ',
+            invoiceNo: 'លេខវិក្កយបត្រ #',
+            billedTo: 'ចេញវិក្កយបត្រជូន',
+            item: 'មុខទំនិញ',
+            qty: 'បរិមាណ',
+            done: 'រួចរាល់',
+            print: 'បោះពុម្ព',
+            ok: 'យល់ព្រម',
+        }
+    },
+    
+    // TRANSLATION HELPER
+    t(key) {
+        return this.i18n[this.state.language][key] || key;
+    },
+
+    // INITIALIZATION
+    init() {
+        this.loadLocalSettings(); // Load theme, lang, sidebar state
+        this.applyTheme();
+
+        onAuthStateChanged(auth, (user) => {
+            this.state.isLoading = false;
+            if (user) {
+                this.state.user = user;
+                this.state.isGuest = user.isAnonymous;
+                this.setupDataListener(); // Listen for Firestore changes
+                this.showApp();
+            } else {
+                this.state.user = null;
+                this.state.isGuest = false;
+                if(this.state.dataUnsubscribe) this.state.dataUnsubscribe(); // Detach listener on logout
+                this.showAuth();
+            }
+        });
+
+        // Listen for OS theme changes if theme is 'system'
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if(this.state.theme === 'system') {
+                this.applyTheme();
+                // Re-render the current page to apply new theme styles and ensure canvas exists
+                this.renderCurrentPage();
+            }
+        });
+        
+        setInterval(() => this.updateTime(), 1000);
+    },
+
+    // ROUTER
+    Router: {
+        init() {
+            window.addEventListener('hashchange', () => App.renderCurrentPage());
+            const initialHash = window.location.hash.replace('#', '') || 'dashboard';
+            App.state.currentPage = initialHash;
+        },
+        navigate(page) {
+            window.location.hash = page;
+        }
+    },
+
+     // AUTH & VIEW MANAGEMENT
+    showAuth() {
+        document.getElementById('app-screen').classList.add('hidden');
+        document.getElementById('auth-screen').classList.remove('hidden');
+        this.renderAuthScreen();
+    },
+    showApp() {
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+        document.getElementById('logout-button').classList.remove('hidden');
+
+        // Initial render after login
+        this.Router.init();
+        this.attachEventListeners();
+        this.renderLayout();
+        this.renderCurrentPage();
+    },
+    renderAuthScreen(isLogin = true) {
+        const authScreen = document.getElementById('auth-screen');
+        const title = isLogin ? this.t('loginToYourAccount') : this.t('createAnAccount');
+        const submitText = isLogin ? this.t('login') : this.t('signup');
+        const toggleText = isLogin ? this.t('dontHaveAccount') : this.t('alreadyHaveAccount');
+        const toggleLink = isLogin ? this.t('signup') : this.t('login');
+        
+        authScreen.innerHTML = `
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg">
+                    <h1 class="text-3xl font-bold text-center">${this.t('bizDash')}</h1>
+                    <h2 class="text-xl font-bold text-center">${title}</h2>
+                    <form id="auth-form" class="space-y-6">
+                        <div>
+                            <label for="email" class="text-sm font-bold text-gray-600 dark:text-gray-300 block">${this.t('email')}</label>
+                            <input id="email" name="email" type="email" required class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mt-1">
+                        </div>
+                        <div>
+                            <label for="password" class="text-sm font-bold text-gray-600 dark:text-gray-300 block">${this.t('password')}</label>
+                            <input id="password" name="password" type="password" required class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mt-1">
+                        </div>
+                        <p id="auth-error" class="text-red-500 text-sm hidden"></p>
+                        <div>
+                            <button type="submit" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white text-sm">${submitText}</button>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                         <p class="text-sm">${toggleText} <a href="#" id="auth-toggle" class="font-bold text-indigo-500 hover:underline">${toggleLink}</a></p>
+                    </div>
+                    <div class="text-center">
+                        <button id="guest-login" class="text-sm text-gray-500 hover:underline">${this.t('continueAsGuest')}</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('auth-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            if (isLogin) {
+                this.handleLogin(email, password);
+            } else {
+                this.handleSignup(email, password);
+            }
+        });
+
+        document.getElementById('auth-toggle').addEventListener('click', e => {
+            e.preventDefault();
+            this.renderAuthScreen(!isLogin);
+        });
+
+        document.getElementById('guest-login').addEventListener('click', () => {
+            this.handleGuestLogin();
+        });
+    },
+
+    async handleLogin(email, password) {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            document.getElementById('auth-error').textContent = this.t('invalidCredentials');
+            document.getElementById('auth-error').classList.remove('hidden');
+        }
+    },
+    async handleSignup(email, password) {
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            // The onAuthStateChanged listener will handle the redirect
+        } catch (error) {
+             document.getElementById('auth-error').textContent = this.t('emailInUse');
+             document.getElementById('auth-error').classList.remove('hidden');
+        }
+    },
+    async handleGuestLogin() {
+        try {
+            await signInAnonymously(auth);
+        } catch (error) {
+            console.error("Guest login failed:", error);
+        }
+    },
+    handleLogout() {
+        signOut(auth);
+    },
+
+    // DATA PERSISTENCE & THEME
+    loadLocalSettings() {
+        const savedLang = localStorage.getItem('bizDashLang');
+        if (savedLang) this.state.language = JSON.parse(savedLang);
+
+        const savedTheme = localStorage.getItem('bizDashTheme');
+        if (savedTheme) this.state.theme = JSON.parse(savedTheme);
+        
+        const savedSidebarState = localStorage.getItem('bizDashSidebar');
+        if (savedSidebarState) this.state.isSidebarExpanded = JSON.parse(savedSidebarState);
+    },
+    saveLocalSettings() {
+        localStorage.setItem('bizDashTheme', JSON.stringify(this.state.theme));
+        localStorage.setItem('bizDashLang', JSON.stringify(this.state.language));
+        localStorage.setItem('bizDashSidebar', JSON.stringify(this.state.isSidebarExpanded));
+    },
+    async setupDataListener() {
+        if (!this.state.user) return;
+        const userDocRef = doc(db, 'users', this.state.user.uid);
+
+        this.state.dataUnsubscribe = onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                this.state.products = data.products || [];
+                this.state.transactions = data.transactions || [];
+                this.state.settings = data.settings || this.state.settings;
+                this.state.customerTypes = data.customerTypes || ['Walk-in Customer', 'Service', 'Online Purchase'];
+            } else if (!this.state.isGuest) {
+                // If the user is new and not a guest, create their initial document
+                this.saveDataToFirestore(); 
+            }
+            // Re-render the current page with the new data
+            if(document.getElementById(`page-${this.state.currentPage}`)) {
+                 this.renderCurrentPage();
+            }
+        });
+    },
+    async saveDataToFirestore() {
+        // Guests' data is not saved to Firestore
+        if (!this.state.user || this.state.isGuest) {
+            this.saveLocalSettings(); // Guests still save theme/lang locally
+            return;
+        }
+        
+        const userData = {
+            products: this.state.products,
+            transactions: this.state.transactions,
+            settings: this.state.settings,
+            customerTypes: this.state.customerTypes,
+        };
+
+        try {
+            // Use setDoc which creates or overwrites.
+            await setDoc(doc(db, 'users', this.state.user.uid), userData);
+        } catch (error) {
+            console.error("Error saving data to Firestore: ", error);
+        }
+        this.saveLocalSettings();
+    },
+
+    applyTheme() {
+        const theme = this.state.theme;
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (theme === 'dark' || (theme === 'system' && systemPrefersDark)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        this.updateThemeIcon();
+    },
+    updateThemeIcon() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden', !isDark);
+            document.getElementById('theme-toggle-light-icon').classList.toggle('hidden', isDark);
+            let tooltip = this.state.theme === 'light' ? 'Dark' : this.state.theme === 'dark' ? 'System' : 'Light';
+            themeToggle.setAttribute('title', `${this.t('toggleTheme')} (${tooltip})`);
+        }
+    },
+
+    // EVENT LISTENERS
+    attachEventListeners() {
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
+        document.getElementById('lang-switcher').addEventListener('click', e => {
+            const langBtn = e.target.closest('.lang-btn');
+            if (langBtn && this.state.language !== langBtn.dataset.lang) {
+                this.state.language = langBtn.dataset.lang;
+                this.saveLocalSettings();
+                this.renderLayout(); this.renderCurrentPage();
+            }
+        });
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            this.state.theme = this.state.theme === 'light' ? 'dark' : this.state.theme === 'dark' ? 'system' : 'light';
+            this.saveLocalSettings(); 
+            this.applyTheme();
+            // Re-render the current page to reflect theme changes everywhere, including the chart
+            this.renderCurrentPage();
+        });
+        document.getElementById('logout-button').addEventListener('click', this.handleLogout);
+    },
+    
+    // UI HELPERS
+    updateTime() {
+        const timeEl = document.getElementById('current-time');
+        const locale = this.state.language === 'km' ? 'km-KH' : 'en-US';
+        if (timeEl) timeEl.textContent = new Date().toLocaleString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    },
+    sanitizeInput(str) {
+        if (typeof str !== 'string') return str ?? '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return str.replace(/[&<>"']/g, m => map[m]);
+    },
+    formatCurrency(amount) { return `${this.state.settings.currency}${Number(amount).toFixed(2)}`; },
+    formatDate(date) { return date.toISOString().split('T')[0]; },
+    
+    // RENDER LOGIC
+    renderLayout() {
+        document.body.className = `bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 ${this.state.language === 'km' ? 'km' : ''}`;
+        
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const isExpanded = this.state.isSidebarExpanded;
+
+        sidebar.style.width = isExpanded ? '16rem' : '4.5rem';
+        if(window.innerWidth >= 768) { // md breakpoint
+            mainContent.style.marginLeft = isExpanded ? '16rem' : '4.5rem';
+            sidebar.classList.remove('absolute', '-translate-x-full');
+        } else {
+            mainContent.style.marginLeft = '0';
+            sidebar.classList.add('absolute', '-translate-x-full');
+        }
+        
+        const icons = {
+            dashboard: `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>`,
+            pos: `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>`,
+            products: `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>`,
+            transactions: `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+            settings: `<svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`,
+        };
+        const navLinks = ['dashboard', 'pos', 'products', 'transactions', 'settings'];
+        sidebar.innerHTML = `
+            <div class="flex-1">
+                <a href="#" class="text-white text-2xl font-semibold px-4 flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 14h.01M9 11h.01M12 11h.01M15 11h.01M5.897 21.003L12 17.5l6.103 3.503A1 1 0 0019 20.057V5a2 2 0 00-2-2H7a2 2 0 00-2 2v15.057a1 1 0 001.897.946z" /></svg>
+                    <span class="${isExpanded ? 'opacity-100' : 'opacity-0 w-0'} transition-opacity duration-300">${this.t('bizDash')}</span>
+                </a>
+                <nav id="nav-menu" class="mt-10">
+                    ${navLinks.map(link => `
+                        <a href="#${link}" class="nav-link flex items-center space-x-4 py-2.5 px-4 rounded transition duration-200 hover:bg-slate-700 hover:text-white">
+                            ${icons[link]}
+                            <span class="${isExpanded ? 'opacity-100' : 'opacity-0 w-0'} transition-opacity duration-300">${this.t(link)}</span>
+                        </a>
+                    `).join('')}
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-700">
+                <button id="sidebar-toggle" title="${this.t('toggleSidebar')}" class="w-full flex items-center justify-center p-2 rounded hover:bg-slate-700">
+                    <svg class="h-6 w-6 transition-transform duration-300 ${isExpanded ? '' : 'rotate-180'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+                </button>
+            </div>
+        `;
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            this.state.isSidebarExpanded = !this.state.isSidebarExpanded;
+            this.saveLocalSettings();
+            this.renderLayout();
+        });
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('bg-indigo-600', btn.dataset.lang === this.state.language);
+            btn.classList.toggle('text-white', btn.dataset.lang === this.state.language);
+            btn.classList.toggle('dark:bg-indigo-500', btn.dataset.lang === this.state.language);
+            btn.classList.toggle('bg-gray-200', btn.dataset.lang !== this.state.language);
+            btn.classList.toggle('text-gray-600', btn.dataset.lang !== this.state.language);
+            btn.classList.toggle('dark:bg-slate-700', btn.dataset.lang !== this.state.language);
+            btn.classList.toggle('dark:text-gray-300', btn.dataset.lang !== this.state.language);
+        });
+        this.updateThemeIcon();
+    },
+
+    renderCurrentPage() {
+        const hash = window.location.hash.replace('#', '') || 'dashboard';
+        this.state.currentPage = hash;
+        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+        const pageEl = document.getElementById(`page-${hash}`);
+        if(pageEl) pageEl.classList.remove('hidden');
+
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('bg-slate-700', 'text-white'));
+        const activeLink = document.querySelector(`.nav-link[href="#${hash}"]`);
+        if(activeLink) activeLink.classList.add('bg-slate-700', 'text-white');
+
+        switch (hash) {
+            case 'dashboard': this.renderDashboard(); break;
+            case 'pos': this.renderPOS(); break;
+            case 'products': this.renderProducts(); break;
+            case 'transactions': this.renderTransactions(); break;
+            case 'settings': this.renderSettings(); break;
+        }
+    },
+    
+    // PAGE RENDERERS
+    renderDashboard() {
+        const page = document.getElementById('page-dashboard');
+        const stats = this.getDashboardStats();
+        page.innerHTML = `
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('dashboard')}</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalIncome')}</h2><p class="text-3xl font-bold text-green-500">${this.formatCurrency(stats.totalIncome)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalExpense')}</h2><p class="text-3xl font-bold text-red-500">${this.formatCurrency(stats.totalExpense)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('netProfit')}</h2><p class="text-3xl font-bold text-blue-500">${this.formatCurrency(stats.netProfit)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalSales')}</h2><p class="text-3xl font-bold text-indigo-500">${stats.totalSales}</p></div>
+            </div>
+            <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('weeklyPerformance')}</h2>
+                <div class="relative h-96"><canvas id="incomeExpenseChart"></canvas></div>
+            </div>
+        `;
+        this.renderChart(this.getChartData());
+    },
+    getDashboardStats() {
+        const income = this.state.transactions.filter(t => ['income', 'sale'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0);
+        const expense = this.state.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+        return { totalIncome: income, totalExpense: expense, netProfit: income - expense, totalSales: this.state.transactions.filter(t => t.type === 'sale').length };
+    },
+    getChartData() {
+        const labels = [], incomeData = [], expenseData = [];
+        const locale = this.state.language === 'km' ? 'km-KH' : 'en-US';
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(d.toLocaleDateString(locale, { weekday: 'short' }));
+            const dateStr = this.formatDate(d);
+            incomeData.push(this.state.transactions.filter(t => t.date === dateStr && ['income', 'sale'].includes(t.type)).reduce((s, t) => s + t.amount, 0));
+            expenseData.push(this.state.transactions.filter(t => t.date === dateStr && t.type === 'expense').reduce((s, t) => s + t.amount, 0));
+        }
+        return { labels, incomeData, expenseData };
+    },
+    renderChart(chartData) {
+        if (window.myChart) window.myChart.destroy();
+        const canvas = document.getElementById('incomeExpenseChart');
+        if (!canvas) return; // Prevent error if canvas doesn't exist
+        const ctx = canvas.getContext('2d');
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : '#f0f0f0', textColor = isDark ? '#94a3b8' : '#666';
+        const incomeGradient = ctx.createLinearGradient(0, 0, 0, 300); incomeGradient.addColorStop(0, 'rgba(74, 144, 226, 0.4)'); incomeGradient.addColorStop(1, 'rgba(74, 144, 226, 0)');
+        const expenseGradient = ctx.createLinearGradient(0, 0, 0, 300); expenseGradient.addColorStop(0, isDark ? 'rgba(148,163,184,0.4)' : 'rgba(208,208,208,0.4)'); expenseGradient.addColorStop(1, isDark ? 'rgba(148,163,184,0)' : 'rgba(208,208,208,0)');
+        window.myChart = new Chart(ctx, { type: 'line', data: { labels: chartData.labels, datasets: [ { label: this.t('income'), data: chartData.incomeData, backgroundColor: incomeGradient, borderColor: '#4A90E2', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6 }, { label: this.t('expense'), data: chartData.expenseData, backgroundColor: expenseGradient, borderColor: isDark ? '#94a3b8' : '#9B9B9B', borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: textColor, boxWidth: 12, padding: 20 } }, tooltip: { backgroundColor: isDark ? '#1e293b' : '#fff', titleColor: isDark ? '#f1f5f9' : '#333', bodyColor: isDark ? '#e2e8f0' : '#666', borderColor: isDark ? '#334155' : '#ddd', borderWidth: 1, padding: 12, callbacks: { label: (c) => ` ${c.dataset.label}: ${this.formatCurrency(c.raw)}` } } }, scales: { y: { beginAtZero: true, border: { display: false }, grid: { color: gridColor }, ticks: { color: textColor, padding: 10, callback: (v) => v >= 1000 ? `${this.state.settings.currency}${v/1000}K` : `${this.state.settings.currency}${v}` } }, x: { border: { display: false }, grid: { display: false }, ticks: { color: textColor } } }, interaction: { mode: 'index', intersect: false } } });
+    },
+    
+    renderPOS() {
+        const page = document.getElementById('page-pos');
+        page.innerHTML = `
+            <div class="flex flex-col lg:flex-row gap-4 h-full">
+                <div class="lg:w-2/5 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b dark:border-slate-700 pb-2">
+                        <h2 class="text-xl font-bold">${this.t('currentOrder')}</h2>
+                        <div class="flex items-center gap-2">
+                            <label for="customer-type-select" class="text-sm font-medium sr-only">${this.t('customerType')}</label>
+                            <select id="customer-type-select" class="border dark:border-slate-600 bg-white dark:bg-slate-700 rounded p-1 text-sm">
+                                ${this.state.customerTypes.map(c => `<option value="${this.sanitizeInput(c)}">${this.sanitizeInput(c)}</option>`).join('')}
+                            </select>
+                            <button id="btn-add-customer-type" class="bg-indigo-500 hover:bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-lg">+</button>
+                        </div>
+                    </div>
+                    <div id="cart-items" class="flex-grow overflow-y-auto pr-2"></div>
+                    <div id="cart-summary" class="border-t dark:border-slate-700 pt-4 mt-4 space-y-2 text-sm"></div>
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <button id="btn-pay" class="bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600">${this.t('pay')}</button>
+                        <button id="btn-cancel-sale" class="bg-red-500 text-white font-bold py-3 rounded-lg hover:bg-red-600">${this.t('cancel')}</button>
+                    </div>
+                </div>
+                <div class="lg:w-3/5 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 flex flex-col">
+                    <div class="flex flex-wrap gap-2 items-center mb-4"><input type="text" id="product-search" placeholder="${this.t('enterProductName')}" class="flex-grow border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-4 py-2"><div class="flex gap-2"><select id="category-filter" class="border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-4 py-2"><option value="">${this.t('allCategories')}</option></select><select id="brand-filter" class="border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-4 py-2"><option value="">${this.t('allBrands')}</option></select></div></div>
+                    <div id="product-list" class="flex-grow grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 overflow-y-auto p-2"></div>
+                </div>
+            </div>
+        `;
+        const { categories, brands } = this.getProductFilters();
+        const categorySelect = document.getElementById('category-filter');
+        const brandSelect = document.getElementById('brand-filter');
+        categories.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; categorySelect.appendChild(o); });
+        brands.forEach(b => { const o = document.createElement('option'); o.value = b; o.textContent = b; brandSelect.appendChild(o); });
+        this.renderPOSCart(); this.renderPOSProducts(); this.attachPOSEventListeners();
+    },
+    attachPOSEventListeners() {
+        document.getElementById('product-search').addEventListener('input', () => this.renderPOSProducts());
+        document.getElementById('category-filter').addEventListener('change', () => this.renderPOSProducts());
+        document.getElementById('brand-filter').addEventListener('change', () => this.renderPOSProducts());
+        document.getElementById('product-list').addEventListener('click', e => { if (e.target.closest('.product-card')) this.addToCart(parseInt(e.target.closest('.product-card').dataset.id)); });
+        document.getElementById('cart-items').addEventListener('click', e => {
+            const cartItem = e.target.closest('.cart-item'); if (!cartItem) return; const id = parseInt(cartItem.dataset.id);
+            if (e.target.closest('.btn-inc-qty')) this.updateCartQuantity(id, 1); if (e.target.closest('.btn-dec-qty')) this.updateCartQuantity(id, -1); if (e.target.closest('.btn-remove-item')) this.removeFromCart(id);
+        });
+        document.getElementById('customer-type-select').addEventListener('change', e => { this.state.pos.customer = e.target.value; });
+        document.getElementById('btn-add-customer-type').addEventListener('click', () => this.showAddCustomerTypeModal());
+        document.getElementById('btn-pay').addEventListener('click', () => this.processSale());
+        document.getElementById('btn-cancel-sale').addEventListener('click', () => this.cancelSale());
+    },
+    renderPOSProducts() {
+        const productList = document.getElementById('product-list'); if(!productList) return; productList.innerHTML = '';
+        const search = document.getElementById('product-search').value.toLowerCase(), category = document.getElementById('category-filter').value, brand = document.getElementById('brand-filter').value;
+        this.state.products.filter(p => (p.name.toLowerCase().includes(search) || p.sku.toLowerCase().includes(search)) && (!category || p.category === category) && (!brand || p.brand === brand))
+        .forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card border dark:border-slate-700 rounded-lg p-2 flex flex-col text-center cursor-pointer hover:shadow-xl dark:hover:shadow-slate-700 transition-shadow'; card.dataset.id = p.id;
+            card.innerHTML = `<img src="${p.imageUrl}" alt="${p.name}" class="w-full h-24 object-contain mx-auto mb-2" onerror="this.onerror=null;this.src='https://placehold.co/150x150/e2e8f0/334155?text=No+Image';"><p class="font-bold text-sm flex-grow">${p.name}</p><p class="text-xs text-gray-500 dark:text-gray-400">${p.stock > 0 ? `${p.stock} ${this.t('stock')}` : 'Out of Stock'}</p><p class="font-bold text-indigo-600 dark:text-indigo-400">${this.formatCurrency(p.price)}</p>`;
+            productList.appendChild(card);
+        });
+    },
+    renderPOSCart() {
+        const cartItemsEl = document.getElementById('cart-items'), cartSummaryEl = document.getElementById('cart-summary'), { cart } = this.state.pos;
+        if (cart.length === 0) cartItemsEl.innerHTML = `<p class="text-gray-500 dark:text-gray-400 text-center mt-8 font-bold">${this.t('cartEmpty')}</p>`;
+        else cartItemsEl.innerHTML = cart.map(item => `<div class="cart-item flex items-center justify-between mb-3 text-sm" data-id="${item.id}"><div class="w-2/5"><p class="font-bold truncate">${item.name}</p><p class="text-xs text-gray-500 dark:text-gray-400">${this.formatCurrency(item.price)}</p></div><div class="flex items-center gap-2"><button class="btn-dec-qty bg-gray-200 dark:bg-slate-700 rounded-full w-6 h-6">-</button><input type="number" value="${item.quantity}" class="w-12 text-center border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" readonly><button class="btn-inc-qty bg-gray-200 dark:bg-slate-700 rounded-full w-6 h-6">+</button></div><p class="font-bold w-1/5 text-right">${this.formatCurrency(item.price*item.quantity)}</p><button class="btn-remove-item text-red-500 hover:text-red-700 ml-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button></div>`).join('');
+        const { settings } = this.state, subtotal = cart.reduce((s, i) => s + (i.price*i.quantity), 0), taxAmount = subtotal * (settings.taxRate/100), discountAmount = subtotal * (this.state.pos.discountPercent/100), total = subtotal + taxAmount - discountAmount + this.state.pos.shipping;
+        cartSummaryEl.innerHTML = `<div class="flex justify-between"><span>${this.t('subtotal')}:</span> <span class="font-bold">${this.formatCurrency(subtotal)}</span></div><div class="flex justify-between items-center"><span>${this.t('tax')} (${settings.taxRate}%):</span><span class="font-bold">${this.formatCurrency(taxAmount)}</span></div><div class="flex justify-between items-center"><span>${this.t('discount')} (%):</span><input type="number" step="0.01" id="pos-discount-percent" class="w-24 text-right border dark:border-slate-600 bg-white dark:bg-slate-700 rounded px-2 py-1 text-sm" value="${this.state.pos.discountPercent}"></div><div class="flex justify-between items-center"><span>${this.t('shipping')} (${settings.currency}):</span><input type="number" step="0.01" id="pos-shipping" class="w-24 text-right border dark:border-slate-600 bg-white dark:bg-slate-700 rounded px-2 py-1 text-sm" value="${this.state.pos.shipping}"></div><div class="flex justify-between font-bold text-lg mt-2 border-t dark:border-slate-700 pt-2"><span>${this.t('total')}:</span> <span>${this.formatCurrency(total)}</span></div>`;
+        document.getElementById('pos-discount-percent').addEventListener('input', e => { this.state.pos.discountPercent = parseFloat(e.target.value) || 0; this.renderPOSCart(); });
+        document.getElementById('pos-shipping').addEventListener('input', e => { this.state.pos.shipping = parseFloat(e.target.value) || 0; this.renderPOSCart(); });
+    },
+    addToCart(id) { const p = this.state.products.find(pr => pr.id === id); if (!p || p.stock <= 0) return; const i = this.state.pos.cart.find(it => it.id === id); if (i && i.quantity < p.stock) i.quantity++; else if (!i) this.state.pos.cart.push({ ...p, quantity: 1 }); this.renderPOSCart(); },
+    updateCartQuantity(id, change) { const i = this.state.pos.cart.find(it => it.id === id), p = this.state.products.find(pr => pr.id === id); if (!i || !p) return; const nq = i.quantity + change; if (nq > 0 && nq <= p.stock) i.quantity = nq; else if (nq <= 0) this.removeFromCart(id); this.renderPOSCart(); },
+    removeFromCart(id) { this.state.pos.cart = this.state.pos.cart.filter(i => i.id !== id); this.renderPOSCart(); },
+    cancelSale() { this.state.pos = { cart: [], customer: this.state.customerTypes[0] || 'Walk-in Customer', discountPercent: 0, shipping: 0 }; this.renderPOS(); },
+    processSale() { const { cart, customer } = this.state.pos; if (cart.length === 0) { this.showAlert(this.t('cartIsEmpty')); return; } const { settings } = this.state, subtotal = cart.reduce((s, i) => s + (i.price*i.quantity), 0), taxAmount = subtotal * (settings.taxRate/100), discountAmount = subtotal * (this.state.pos.discountPercent/100), total = subtotal + taxAmount - discountAmount + this.state.pos.shipping; const sale = { id: Date.now(), type: 'sale', date: this.formatDate(new Date()), description: `Sale to ${customer}`, amount: total, items: cart, subtotal, taxAmount, discountAmount, shippingAmount: this.state.pos.shipping, taxRate: settings.taxRate }; this.state.transactions.push(sale); cart.forEach(i => { const p = this.state.products.find(pr => pr.id === i.id); if (p) p.stock -= i.quantity; }); this.showInvoiceModal(sale); this.cancelSale(); this.saveDataToFirestore(); },
+    getProductFilters() { return { categories: [...new Set(this.state.products.map(p => p.category))], brands: [...new Set(this.state.products.map(p => p.brand))] }; },
+    renderProducts() { const page = document.getElementById('page-products'); page.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${this.t('products')}</h1><button id="btn-add-product" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">${this.t('addProduct')}</button></div><div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto"><table class="w-full text-sm text-left text-gray-500 dark:text-gray-400"><thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-700"><tr><th class="px-6 py-3">${this.t('sku')}</th><th class="px-6 py-3">${this.t('product')}</th><th class="px-6 py-3">${this.t('category')}</th><th class="px-6 py-3">${this.t('price')}</th><th class="px-6 py-3">${this.t('cost')}</th><th class="px-6 py-3">${this.t('stock')}</th><th class="px-6 py-3">${this.t('actions')}</th></tr></thead><tbody id="product-table-body"></tbody></table></div>`; this.renderProductTable(); document.getElementById('btn-add-product').addEventListener('click', () => this.showProductModal()); },
+    renderProductTable() { const tbody = document.getElementById('product-table-body'); if (!tbody) return; tbody.innerHTML = ''; this.state.products.forEach(p => { const tr = document.createElement('tr'); tr.className = 'bg-white dark:bg-slate-800 border-b dark:border-slate-700'; tr.innerHTML = `<td class="px-6 py-4">${p.sku}</td><th scope="row" class="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">${p.name}</th><td class="px-6 py-4">${p.category}</td><td class="px-6 py-4">${this.formatCurrency(p.price)}</td><td class="px-6 py-4">${this.formatCurrency(p.cost)}</td><td class="px-6 py-4">${p.stock}</td><td class="px-6 py-4"><button class="btn-edit-product text-blue-500 hover:underline mr-2" data-id="${p.id}">${this.t('edit')}</button><button class="btn-delete-product text-red-500 hover:underline" data-id="${p.id}">${this.t('delete')}</button></td>`; tbody.appendChild(tr); }); tbody.addEventListener('click', e => { if (e.target.matches('.btn-edit-product')) this.showProductModal(this.state.products.find(p => p.id == e.target.dataset.id)); if (e.target.matches('.btn-delete-product')) this.showAlert(this.t('confirmDeleteProduct'), () => { this.state.products = this.state.products.filter(p => p.id != e.target.dataset.id); this.saveDataToFirestore(); this.renderProductTable(); }, true); }); },
+    renderTransactions() { const page = document.getElementById('page-transactions'); page.innerHTML = `<div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4"><h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${this.t('transactions')}</h1><div class="flex-shrink-0"><button id="btn-add-income" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mr-2">${this.t('addIncome')}</button><button id="btn-add-expense" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">${this.t('addExpense')}</button></div></div><div class="mb-4"><div class="flex flex-wrap gap-2 bg-gray-200 dark:bg-slate-800 p-1 rounded-lg" id="transaction-filter-buttons">${['all', 'today', 'weekly', 'monthly', 'yearly'].map(f => `<button class="filter-btn flex-1 px-3 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300" data-filter="${f}">${this.t(f)}</button>`).join('')}</div></div><div id="transaction-summary" class="grid grid-cols-2 gap-4 mb-4"></div><div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto"><table class="w-full text-sm text-left text-gray-500 dark:text-gray-400"><thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-700"><tr><th class="px-6 py-3">${this.t('date')}</th><th class="px-6 py-3">${this.t('type')}</th><th class="px-6 py-3">${this.t('description')}</th><th class="px-6 py-3">${this.t('amount')}</th><th class="px-6 py-3">${this.t('actions')}</th></tr></thead><tbody id="transaction-table-body"></tbody></table></div>`; document.getElementById('btn-add-income').addEventListener('click', () => this.showTransactionModal('income')); document.getElementById('btn-add-expense').addEventListener('click', () => this.showTransactionModal('expense')); document.getElementById('transaction-filter-buttons').addEventListener('click', e => { if (e.target.matches('.filter-btn')) this.renderTransactionTable(e.target.dataset.filter); }); this.renderTransactionTable('all'); },
+    renderTransactionTable(filter = 'all') { const tbody = document.getElementById('transaction-table-body'); if (!tbody) return; const now = new Date(); now.setHours(0,0,0,0); const filtered = this.state.transactions.filter(t => { const d = new Date(t.date); d.setHours(0,0,0,0); switch(filter) { case 'today': return d.getTime() === now.getTime(); case 'weekly': const first = new Date(now); first.setDate(now.getDate() - now.getDay()); const last = new Date(first); last.setDate(first.getDate() + 6); return d >= first && d <= last; case 'monthly': return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); case 'yearly': return d.getFullYear() === now.getFullYear(); default: return true; } }); const income = filtered.filter(t => ['income', 'sale'].includes(t.type)).reduce((s, t) => s + t.amount, 0), expense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0); document.getElementById('transaction-summary').innerHTML = `<div class="bg-green-100 dark:bg-green-900/50 p-4 rounded-lg"><h3 class="text-green-800 dark:text-green-300 font-bold">${this.t('totalIncome')}</h3><p class="text-2xl font-bold text-green-600 dark:text-green-400">${this.formatCurrency(income)}</p></div><div class="bg-red-100 dark:bg-red-900/50 p-4 rounded-lg"><h3 class="text-red-800 dark:text-red-300 font-bold">${this.t('totalExpense')}</h3><p class="text-2xl font-bold text-red-600 dark:text-red-400">${this.formatCurrency(expense)}</p></div>`; document.querySelectorAll('#transaction-filter-buttons .filter-btn').forEach(btn => btn.classList.toggle('bg-white', btn.dataset.filter === filter) || btn.classList.toggle('dark:bg-slate-600', btn.dataset.filter === filter) || btn.classList.toggle('text-gray-900', btn.dataset.filter === filter) || btn.classList.toggle('dark:text-white', btn.dataset.filter === filter) || btn.classList.toggle('shadow', btn.dataset.filter === filter)); const sorted = [...filtered].sort((a,b) => new Date(b.date) - new Date(a.date)); if(sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 dark:text-gray-400 font-bold">${this.t('noTransactions')}</td></tr>`; return; } tbody.innerHTML = sorted.map(t => `<tr class="bg-white dark:bg-slate-800 border-b dark:border-slate-700"><td class="px-6 py-4">${t.date}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-semibold ${t.type==='income'?'text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-900/50':t.type==='expense'?'text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/50':'text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/50'}">${t.type[0].toUpperCase()+t.type.slice(1)}</span></td><th scope="row" class="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">${t.description}</th><td class="px-6 py-4 font-bold ${t.type==='expense'?'text-red-500':'text-green-500'}">${this.formatCurrency(t.amount)}</td><td class="px-6 py-4">${t.type==='sale'?`<button class="btn-view-invoice text-blue-500 hover:underline" data-id="${t.id}">${this.t('view')}</button>`:`<button class="btn-delete-transaction text-red-500 hover:underline" data-id="${t.id}">${this.t('delete')}</button>`}</td></tr>`).join(''); tbody.addEventListener('click', e => { if (e.target.matches('.btn-view-invoice')) this.showInvoiceModal(this.state.transactions.find(t => t.id == e.target.dataset.id)); else if (e.target.matches('.btn-delete-transaction')) this.showAlert(this.t('confirmDeleteTransaction'), () => { this.state.transactions = this.state.transactions.filter(t => t.id != e.target.dataset.id); this.saveDataToFirestore(); this.renderTransactionTable(filter); }, true); }); },
+    renderSettings() { const page = document.getElementById('page-settings'), { settings } = this.state; page.innerHTML = `<h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('settings')}</h1><div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md max-w-md"><form id="settings-form"><div class="mb-4"><label for="businessName" class="block font-bold mb-2">${this.t('businessName')}</label><input type="text" id="businessName" name="businessName" value="${this.sanitizeInput(settings.businessName)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="currency" class="block font-bold mb-2">${this.t('currencySymbol')}</label><input type="text" id="currency" name="currency" value="${this.sanitizeInput(settings.currency)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="taxRate" class="block font-bold mb-2">${this.t('taxPercentage')}</label><input type="number" id="taxRate" name="taxRate" step="0.01" value="${settings.taxRate}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">${this.t('saveSettings')}</button></form></div>`; document.getElementById('settings-form').addEventListener('submit', e => { e.preventDefault(); const d = new FormData(e.target); this.state.settings.businessName = d.get('businessName'); this.state.settings.currency = d.get('currency'); this.state.settings.taxRate = parseFloat(d.get('taxRate')) || 0; this.saveDataToFirestore(); this.showAlert(this.t('settingsSaved')); this.renderLayout(); this.renderCurrentPage(); }); },
+    // MODAL RENDERERS
+    showProductModal(p = null) { const isEdit = p !== null, t = isEdit ? 'editProduct' : 'addNewProduct', s = this.sanitizeInput; document.getElementById('modals-container').innerHTML = `<div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-lg"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="product-form"><input type="hidden" name="id" value="${isEdit?p.id:''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${Object.entries({name:'productName',sku:'sku',category:'category',brand:'brand',price:'sellingPrice',cost:'costPrice',stock:'stockQuantity',imageUrl:'imageUrl'}).map(([k,ph])=>`<input name="${k}" type="${['price','cost','stock'].includes(k)?'number':'text'}" step="${['price','cost'].includes(k)?'0.01':'1'}" placeholder="${this.t(ph)}" class="p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?s(p[k]):''}">`).join('')}</div><div class="flex justify-end mt-6"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">${isEdit?this.t('saveChanges'):this.t('addProduct')}</button></div></form></div></div>`; document.getElementById('product-modal').addEventListener('click', e => { if (e.target.id === 'product-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('product-form').addEventListener('submit', e => { e.preventDefault(); const d = Object.fromEntries(new FormData(e.target).entries()); document.getElementById('modals-container').innerHTML = ''; ['price','cost','stock'].forEach(k => d[k]=parseFloat(d[k]||0)); if(isEdit){ const i=this.state.products.findIndex(pr=>pr.id==d.id); this.state.products[i]={...this.state.products[i],...d}; } else { d.id=Date.now(); this.state.products.push(d); } this.saveDataToFirestore(); this.renderProductTable(); }); },
+    showTransactionModal(type) { const t=type==='income'?'addIncome':'addExpense'; document.getElementById('modals-container').innerHTML = `<div id="transaction-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="transaction-form"><input name="description" placeholder="${this.t('description')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><input name="amount" type="number" step="0.01" placeholder="${this.t('amount')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><input name="date" type="date" value="${this.formatDate(new Date())}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><div class="flex justify-end mt-4"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 ${type==='income'?'bg-green-500':'bg-red-500'} text-white rounded">${this.t('add')}</button></div></form></div></div>`; document.getElementById('transaction-modal').addEventListener('click', e => { if (e.target.id === 'transaction-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('transaction-form').addEventListener('submit', e => { e.preventDefault(); document.getElementById('modals-container').innerHTML = ''; const n = Object.fromEntries(new FormData(e.target).entries()); n.id = Date.now(); n.type = type; n.amount = parseFloat(n.amount); this.state.transactions.push(n); this.saveDataToFirestore(); this.renderTransactionTable('all'); }); },
+    showAddCustomerTypeModal() { document.getElementById('modals-container').innerHTML = `<div id="customer-type-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm"><h2 class="text-2xl font-bold mb-4">${this.t('addNewCustomerType')}</h2><form id="customer-type-form"><input name="name" placeholder="${this.t('customerTypeName')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><div class="flex justify-end"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">${this.t('add')}</button></div></form></div></div>`; document.getElementById('customer-type-modal').addEventListener('click', e => { if (e.target.id === 'customer-type-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('customer-type-form').addEventListener('submit', e => { e.preventDefault(); const name = new FormData(e.target).get('name').trim(); if (name && !this.state.customerTypes.includes(name)) { this.state.customerTypes.push(name); this.saveDataToFirestore(); } document.getElementById('modals-container').innerHTML = ''; this.renderPOS(); }); },
+    showInvoiceModal(t) { document.getElementById('modals-container').innerHTML = `<div id="invoice-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-lg"><div id="invoice-content"></div><div class="flex justify-end mt-4 px-4"><button type="button" id="btn-invoice-done" class="px-4 py-2 bg-indigo-600 text-white rounded mr-2 hover:bg-indigo-700">${this.t('done')}</button><button id="btn-print-invoice" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">${this.t('print')}</button></div></div></div>`; const el = document.getElementById('invoice-content'), { settings } = this.state; el.innerHTML = `<div class="p-4 text-gray-800 dark:text-gray-200"><h2 class="text-2xl font-bold text-center mb-2">${settings.businessName}</h2><p class="text-center text-gray-600 dark:text-gray-400 mb-6">${this.t('invoice')}</p><div class="flex justify-between text-sm mb-4"><p><strong>${this.t('invoiceNo')}</strong> ${t.id}<br><strong>${this.t('date')}:</strong> ${t.date}</p><p><strong>${this.t('billedTo')}:</strong><br>${t.description.replace('Sale to ', '')}</p></div><table class="w-full text-sm text-left mb-4"><thead class="border-b dark:border-slate-700"><tr><th class="py-2">${this.t('item')}</th><th class="py-2 text-center">${this.t('qty')}</th><th class="py-2 text-right">${this.t('price')}</th><th class="py-2 text-right">${this.t('total')}</th></tr></thead><tbody>${t.items.map(i => `<tr class="border-b dark:border-slate-700"><td class="py-2">${i.name}</td><td class="py-2 text-center">${i.quantity}</td><td class="py-2 text-right">${this.formatCurrency(i.price)}</td><td class="py-2 text-right">${this.formatCurrency(i.price*i.quantity)}</td></tr>`).join('')}</tbody></table><div class="flex justify-end text-sm"><div class="w-1/2 space-y-1"><div class="flex justify-between"><span>${this.t('subtotal')}:</span><span>${this.formatCurrency(t.subtotal)}</span></div><div class="flex justify-between"><span>${this.t('tax')}:</span><span>${this.formatCurrency(t.taxAmount)}</span></div><div class="flex justify-between"><span>${this.t('discount')}:</span><span>-${this.formatCurrency(t.discountAmount)}</span></div><div class="flex justify-between"><span>${this.t('shipping')}:</span><span>${this.formatCurrency(t.shippingAmount)}</span></div><div class="flex justify-between font-bold text-base border-t dark:border-slate-600 pt-1 mt-1"><span>${this.t('total')}:</span><span>${this.formatCurrency(t.amount)}</span></div></div></div></div>`; document.getElementById('invoice-modal').addEventListener('click', e => { if (e.target.id === 'invoice-modal') document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('btn-invoice-done').addEventListener('click', () => { document.getElementById('modals-container').innerHTML = ''; this.Router.navigate('transactions'); }); document.getElementById('btn-print-invoice').addEventListener('click', () => { const pw = window.open('','','height=600,width=800'); pw.document.write(`<html><head><title>Invoice</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Kantumruy:wght@400;700&display=swap" rel="stylesheet"><style>body{font-family:${this.state.language==='km'?"'Kantumruy',sans-serif":"'Inter',sans-serif"};margin:0;padding:0;display:flex;justify-content:center;align-items:flex-start;background-color:#f4f4f4;}.invoice-box{width:100%;max-width:400px;margin:20px;padding:30px;border:1px solid #eee;box-shadow:0 0 10px rgba(0,0,0,0.15);font-size:16px;line-height:24px;color:#555;background:#fff;}</style></head><body><div class="invoice-box">${el.innerHTML}</div></body></html>`); pw.document.close(); pw.print(); }); },
+    showAlert(m, onConfirm = null, isConfirmation = false) { document.getElementById('modals-container').innerHTML = `<div id="alert-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><p class="text-lg mb-6">${m}</p><div class="flex ${isConfirmation?'justify-center':'justify-end'} gap-4">${isConfirmation?`<button id="alert-cancel" class="px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded hover:bg-gray-400">${this.t('cancelModal')}</button>`:''}<button id="alert-ok" class="px-4 py-2 ${isConfirmation?'bg-red-500':'bg-indigo-600'} text-white rounded">${isConfirmation?this.t('delete'):this.t('ok')}</button></div></div></div>`; const close = () => document.getElementById('modals-container').innerHTML = ''; document.getElementById('alert-ok').addEventListener('click', () => { if (onConfirm) onConfirm(); close(); }); if (isConfirmation) document.getElementById('alert-cancel').addEventListener('click', close); }
+};
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
+
