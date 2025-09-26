@@ -65,7 +65,7 @@
             </div>
         </div>
     </div>
-
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
     <div id="modals-container"></div>
 
 <script type="module">
@@ -115,26 +115,26 @@ const App = {
     },
     i18n: {
         en: {
-            login: 'Login', signup: 'Sign Up', email: 'Email', password: 'Password', loginToYourAccount: 'Login to your account', dontHaveAccount: "Don't have an account?", createAnAccount: 'Create an account', alreadyHaveAccount: 'Already have an account?', continueAsGuest: 'Continue as Guest', logout: 'Logout', invalidCredentials: 'Invalid email or password.', emailInUse: 'This email is already in use.',
+            login: 'Login', signup: 'Sign Up', email: 'Email', password: 'Password', loginToYourAccount: 'Login to your account', logout: 'Logout', invalidCredentials: 'Invalid email or password.',
             bizDash: 'BizDash', dashboard: 'Dashboard', pos: 'Point of Sale', products: 'Products', transactions: 'Transactions', settings: 'Settings', toggleSidebar: 'Toggle Sidebar',
             totalIncome: 'Total Income', totalExpense: 'Total Expense', netProfit: 'Net Profit', totalSales: 'Total Sales', weeklyPerformance: 'Weekly Performance', income: 'Income', expense: 'Expense', outOfStockSoon: 'Out of Stock Soon', outOfStock: 'Out of Stock', monthlyExpenseBreakdown: 'Monthly Expense Breakdown', monthlyIncomeBreakdown: 'Monthly Income Breakdown', incomeAndSales: 'Income & Sales', expenses: 'Expenses',
             currentOrder: 'Current Order', pay: 'Pay', cancel: 'Cancel', enterProductName: 'Enter Product Name / SKU', allCategories: 'All Categories', allBrands: 'All Brands', cartEmpty: 'Your cart is empty.', subtotal: 'Subtotal', tax: 'Tax', discount: 'Discount', shipping: 'Shipping', total: 'Total', cartIsEmpty: 'Cart is empty.', customerType: 'Customer Type', billedTo: 'Billed To',
             addProduct: 'Add Product', sku: 'SKU', product: 'Product', category: 'Category', price: 'Price', cost: 'Cost', stock: 'Stock', actions: 'Actions', edit: 'Edit', delete: 'Delete', confirmDeleteProduct: 'Are you sure you want to delete this product?',
             addIncome: 'Add Income', addExpense: 'Add Expense', all: 'All', allCustomers: 'All Customers', searchDescription: 'Search Description...', today: 'Today', weekly: 'This Week', monthly: 'This Month', yearly: 'This Year', date: 'Date', type: 'Type', description: 'Description', amount: 'Amount', noTransactions: 'No transactions found for this period.', view: 'View', confirmDeleteTransaction: 'Are you sure you want to delete this transaction?',
-            businessName: 'Business Name', currencySymbol: 'Currency Symbol', taxPercentage: 'Tax (%)', saveSettings: 'Save Settings', settingsSaved: 'Settings saved!', shareMenu: 'Share Menu', previewMenu: 'Preview Menu', scanToViewMenu: 'Scan QR code to view menu and order',
-            editProduct: 'Edit Product', addNewProduct: 'Add New Product', addNewCustomerType: 'Add New Customer Type', customerTypeName: 'Customer/Service Name', productName: 'Product Name', brand: 'Brand', sellingPrice: 'Selling Price', costPrice: 'Cost Price', stockQuantity: 'Stock Quantity', productImage: 'Product Image', cancelModal: 'Cancel', saveChanges: 'Save Changes', add: 'Add',
-            invoice: 'Invoice', invoiceNo: 'Invoice #', item: 'Item', qty: 'Qty', done: 'Done', print: 'Print', download: 'Download', ok: 'OK', yourCart: 'Your Cart', placeOrder: 'Place Order', orderSummary: 'Order Summary', showThisToCashier: 'Please show this to the cashier to complete your order.',
+            businessName: 'Business Name', currencySymbol: 'Currency Symbol', taxPercentage: 'Tax (%)', saveSettings: 'Save Settings', settingsSaved: 'Settings saved!',
+            editProduct: 'Edit Product', addNewProduct: 'Add New Product', productName: 'Product Name', brand: 'Brand', sellingPrice: 'Selling Price', costPrice: 'Cost Price', stockQuantity: 'Stock Quantity', productImage: 'Product Image', cancelModal: 'Cancel', saveChanges: 'Save Changes', add: 'Add',
+            invoice: 'Invoice', invoiceNo: 'Invoice #', item: 'Item', qty: 'Qty', done: 'Done', print: 'Print', download: 'Download', ok: 'OK',
         },
         km: {
-            login: 'ចូល', signup: 'ចុះឈ្មោះ', email: 'អ៊ីមែល', password: 'ពាក្យសម្ងាត់', loginToYourAccount: 'ចូលគណនីរបស់អ្នក', dontHaveAccount: "មិនទាន់មានគណនី?", createAnAccount: 'បង្កើតគណនី', alreadyHaveAccount: 'មានគណនីហើយ?', continueAsGuest: 'បន្តជាភ្ញៀវ', logout: 'ចាកចេញ', invalidCredentials: 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។', emailInUse: 'អ៊ីមែលនេះត្រូវបានប្រើប្រាស់រួចហើយ។',
+            login: 'ចូល', signup: 'ចុះឈ្មោះ', email: 'អ៊ីមែល', password: 'ពាក្យសម្ងាត់', loginToYourAccount: 'ចូលគណនីរបស់អ្នក', logout: 'ចាកចេញ', invalidCredentials: 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។',
             bizDash: 'BizDash', dashboard: 'ផ្ទាំងគ្រប់គ្រង', pos: 'កន្លែង​លក់', products: 'ផលិតផល', transactions: 'ប្រតិបត្តិការ', settings: 'ការកំណត់', toggleSidebar: 'បិទ/បើកម៉ឺនុយចំហៀង',
             totalIncome: 'ចំណូលសរុប', totalExpense: 'ចំណាយសរុប', netProfit: 'ប្រាក់ចំណេញសុទ្ធ', totalSales: 'ការលក់សរុប', weeklyPerformance: 'លទ្ធផលប្រចាំសប្តាហ៍', income: 'ចំណូល', expense: 'ចំណាយ', outOfStockSoon: 'ជិតអស់ពីស្តុក', outOfStock: 'អស់ពីស្តុក', monthlyExpenseBreakdown: 'ការបែងចែកចំណាយប្រចាំខែ', monthlyIncomeBreakdown: 'ការបែងចែកចំណូលប្រចាំខែ', incomeAndSales: 'ចំណូល & ការលក់', expenses: 'ចំណាយ',
             currentOrder: 'ការបញ្ជាទិញបច្ចុប្បន្ន', pay: 'ទូទាត់', cancel: 'បោះបង់', enterProductName: 'បញ្ចូលឈ្មោះផលិតផល / SKU', allCategories: 'គ្រប់ប្រភេទ', allBrands: 'គ្រប់ម៉ាក', cartEmpty: 'រទេះរបស់អ្នកនៅទទេ', subtotal: 'សរុបរង', tax: 'ពន្ធ', discount: 'បញ្ចុះតម្លៃ', shipping: 'ដឹកជញ្ជូន', total: 'សរុប', cartIsEmpty: 'រទេះទទេ', customerType: 'ប្រភេទអតិថិជន', billedTo: 'ចេញវិក្កយបត្រជូន',
             addProduct: 'បន្ថែមផលិតផល', sku: 'SKU', product: 'ផលិតផល', category: 'ប្រភេទ', price: 'តម្លៃ', cost: 'ថ្លៃដើម', stock: 'ក្នុងស្តុក', actions: 'សកម្មភាព', edit: 'កែសម្រួល', delete: 'លុប', confirmDeleteProduct: 'តើអ្នកប្រាកដទេថាចង់លុបផលិតផលនេះ?',
             addIncome: 'បន្ថែមចំណូល', addExpense: 'បន្ថែមចំណាយ', all: 'ទាំងអស់', allCustomers: 'អតិថិជនទាំងអស់', searchDescription: 'ស្វែងរកតាមការពិពណ៌នា...', today: 'ថ្ងៃនេះ', weekly: 'សប្តាហ៍នេះ', monthly: 'ខែនេះ', yearly: 'ឆ្នាំនេះ', date: 'កាលបរិច្ឆេទ', type: 'ប្រភេទ', description: 'ការពិពណ៌នា', amount: 'ចំនួនទឹកប្រាក់', noTransactions: 'រកមិនឃើញប្រតិបត្តិការសម្រាប់រយៈពេលនេះទេ', view: 'មើល', confirmDeleteTransaction: 'តើអ្នកប្រាកដទេថាចង់លុបប្រតិបត្តិការនេះ?',
-            businessName: 'ឈ្មោះអាជីវកម្ម', currencySymbol: 'និមិត្តសញ្ញារូបិយប័ណ្ណ', taxPercentage: 'ពន្ធ (%)', saveSettings: 'រក្សាទុកការកំណត់', settingsSaved: 'ការកំណត់ត្រូវបានរក្សាទុក!', shareMenu: 'ចែករំលែកម៉ឺនុយ', previewMenu: 'មើលម៉ឺនុយជាមុន', scanToViewMenu: 'ស្កេន QR ដើម្បីមើលម៉ឺនុយ និងបញ្ជាទិញ',
-            editProduct: 'កែសម្រួលផលិតផល', addNewProduct: 'បន្ថែមផលិតផលថ្មី', addNewCustomerType: 'បន្ថែមប្រភេទអតិថិជនថ្មី', customerTypeName: 'ឈ្មោះអតិថិជន/សេវាកម្ម', productName: 'ឈ្មោះ​ផលិតផល', brand: 'ម៉ាក', sellingPrice: 'តម្លៃលក់', costPrice: 'តម្លៃ​ដើម', stockQuantity: 'បរិមាណ​ក្នុង​ស្តុក', productImage: 'រូបភាពផលិតផល', cancelModal: 'បោះបង់', saveChanges: 'រក្សាទុកការផ្លាស់ប្តូរ', add: 'បន្ថែម',
-            invoice: 'វិក័យប័ត្រ', invoiceNo: 'លេខវិក្កយបត្រ #', item: 'មុខទំនិញ', qty: 'បរិមាណ', done: 'រួចរាល់', print: 'បោះពុម្ព', download: 'ទាញយក', ok: 'យល់ព្រម', yourCart: 'រទេះរបស់អ្នក', placeOrder: 'បញ្ជាទិញ', orderSummary: 'សរុបការបញ្ជាទិញ', showThisToCashier: 'សូមបង្ហាញនេះទៅអ្នកគិតលុយដើម្បីបញ្ចប់ការបញ្ជាទិញរបស់អ្នក។',
+            businessName: 'ឈ្មោះអាជីវកម្ម', currencySymbol: 'និមិត្តសញ្ញារូបិយប័ណ្ណ', taxPercentage: 'ពន្ធ (%)', saveSettings: 'រក្សាទុកការកំណត់', settingsSaved: 'ការកំណត់ត្រូវបានរក្សាទុក!',
+            editProduct: 'កែសម្រួលផលិតផល', addNewProduct: 'បន្ថែមផលិតផលថ្មី', productName: 'ឈ្មោះ​ផលិតផល', brand: 'ម៉ាក', sellingPrice: 'តម្លៃលក់', costPrice: 'តម្លៃ​ដើម', stockQuantity: 'បរិមាណ​ក្នុង​ស្តុក', productImage: 'រូបភាពផលិតផល', cancelModal: 'បោះបង់', saveChanges: 'រក្សាទុកការផ្លាស់ប្តូរ', add: 'បន្ថែម',
+            invoice: 'វិក័យប័ត្រ', invoiceNo: 'លេខវិក្កយបត្រ #', item: 'មុខទំនិញ', qty: 'បរិមាណ', done: 'រួចរាល់', print: 'បោះពុម្ព', download: 'ទាញយក', ok: 'យល់ព្រម',
         }
     },
     
@@ -142,27 +142,19 @@ const App = {
 
     init() {
         this.applyTheme();
-        const hash = window.location.hash;
-        if (hash.startsWith('#/menu/')) {
-            const userId = hash.split('/')[2];
-            this.handleCustomerView(userId);
-        } else {
-            this.loadLocalSettings();
-            onAuthStateChanged(auth, (user) => {
-                this.state.isLoading = false;
-                if (user) {
-                    this.state.user = user;
-                    this.state.isGuest = user.isAnonymous;
-                    this.setupDataListener();
-                    this.showApp();
-                } else {
-                    this.state.user = null;
-                    this.state.isGuest = false;
-                    if(this.state.dataUnsubscribe) this.state.dataUnsubscribe();
-                    this.showAuth();
-                }
-            });
-        }
+        this.loadLocalSettings();
+        onAuthStateChanged(auth, (user) => {
+            this.state.isLoading = false;
+            if (user) {
+                this.state.user = user;
+                this.setupDataListener();
+                this.showApp();
+            } else {
+                this.state.user = null;
+                if(this.state.dataUnsubscribe) this.state.dataUnsubscribe();
+                this.showAuth();
+            }
+        });
         setInterval(() => this.updateTime(), 1000);
     },
 
@@ -171,39 +163,16 @@ const App = {
         navigate(page) { window.location.hash = page; }
     },
 
-    showAuth() { document.getElementById('app-screen').classList.add('hidden'); document.getElementById('customer-menu-screen').classList.add('hidden'); document.getElementById('auth-screen').classList.remove('hidden'); this.renderAuthScreen(); },
-    showApp() { document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('customer-menu-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); document.getElementById('logout-button').classList.remove('hidden'); this.Router.init(); this.attachEventListeners(); this.renderLayout(); this.renderCurrentPage(); },
-    async handleCustomerView(userId) {
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('app-screen').classList.add('hidden');
-        document.getElementById('customer-menu-screen').classList.remove('hidden');
+    showAuth() { document.getElementById('app-screen').classList.add('hidden'); document.getElementById('auth-screen').classList.remove('hidden'); this.renderAuthScreen(); },
+    showApp() { document.getElementById('auth-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); document.getElementById('logout-button').classList.remove('hidden'); this.Router.init(); this.attachEventListeners(); this.renderLayout(); this.renderCurrentPage(); },
 
-        try {
-            const userDocRef = doc(db, 'users', userId);
-            const docSnap = await getDoc(userDocRef);
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                this.CustomerView.init(userData);
-            } else {
-                document.getElementById('customer-menu-screen').innerHTML = `<p class="text-center mt-10">Menu not found.</p>`;
-            }
-        } catch (error) {
-            console.error("Error fetching customer menu:", error);
-            document.getElementById('customer-menu-screen').innerHTML = `<p class="text-center mt-10">Error loading menu.</p>`;
-        }
-    },
-    renderAuthScreen(isLogin = true) {
+    renderAuthScreen() {
         const authScreen = document.getElementById('auth-screen');
-        const title = isLogin ? this.t('loginToYourAccount') : this.t('createAnAccount');
-        const submitText = isLogin ? this.t('login') : this.t('signup');
-        const toggleText = isLogin ? this.t('dontHaveAccount') : this.t('alreadyHaveAccount');
-        const toggleLink = isLogin ? this.t('signup') : this.t('login');
-        
         authScreen.innerHTML = `
             <div class="flex items-center justify-center min-h-screen">
                 <div class="w-full max-w-md p-8 space-y-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg">
                     <h1 class="text-3xl font-bold text-center">${this.t('bizDash')}</h1>
-                    <h2 class="text-xl font-bold text-center">${title}</h2>
+                    <h2 class="text-xl font-bold text-center">${this.t('loginToYourAccount')}</h2>
                     <form id="auth-form" class="space-y-6">
                         <div>
                             <label for="email" class="text-sm font-bold text-gray-600 dark:text-gray-300 block">${this.t('email')}</label>
@@ -215,15 +184,9 @@ const App = {
                         </div>
                         <p id="auth-error" class="text-red-500 text-sm hidden"></p>
                         <div>
-                            <button type="submit" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white text-sm">${submitText}</button>
+                            <button type="submit" class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white text-sm">${this.t('login')}</button>
                         </div>
                     </form>
-                    <div class="text-center">
-                         <p class="text-sm">${toggleText} <a href="#" id="auth-toggle" class="font-bold text-indigo-500 hover:underline">${toggleLink}</a></p>
-                    </div>
-                    <div class="text-center">
-                        <button id="guest-login" class="text-sm text-gray-500 hover:underline">${this.t('continueAsGuest')}</button>
-                    </div>
                 </div>
             </div>
         `;
@@ -232,17 +195,7 @@ const App = {
             e.preventDefault();
             const email = e.target.email.value;
             const password = e.target.password.value;
-            if (isLogin) this.handleLogin(email, password);
-            else this.handleSignup(email, password);
-        });
-
-        document.getElementById('auth-toggle').addEventListener('click', e => {
-            e.preventDefault();
-            this.renderAuthScreen(!isLogin);
-        });
-
-        document.getElementById('guest-login').addEventListener('click', () => {
-            this.handleGuestLogin();
+            this.handleLogin(email, password);
         });
     },
 
@@ -253,18 +206,6 @@ const App = {
             errEl.textContent = this.t('invalidCredentials');
             errEl.classList.remove('hidden');
         }
-    },
-    async handleSignup(email, password) {
-        try { await createUserWithEmailAndPassword(auth, email, password); } 
-        catch (error) {
-             const errEl = document.getElementById('auth-error');
-             errEl.textContent = this.t('emailInUse');
-             errEl.classList.remove('hidden');
-        }
-    },
-    async handleGuestLogin() {
-        try { await signInAnonymously(auth); } 
-        catch (error) { console.error("Guest login failed:", error); }
     },
     handleLogout() {
         this.state.products = [];
@@ -300,7 +241,7 @@ const App = {
                 this.state.products = data.products || [];
                 this.state.transactions = data.transactions || [];
                 this.state.settings = data.settings || { businessName: 'My Business', currency: '$', taxRate: 0 };
-            } else if (!this.state.isGuest) {
+            } else {
                 this.loadSampleData();
                 this.saveDataToFirestore(); 
             }
@@ -311,16 +252,16 @@ const App = {
     },
     loadSampleData() {
         this.state.products = [
-            { id: 1, name: 'Premium Engine Oil (5L)', sku: 'SYN-5L', category: 'Lubricants', brand: 'PowerRev', price: 55.00, cost: 35.00, stock: 30, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Oil' },
-            { id: 2, name: 'Performance Air Filter', sku: 'PAF-300', category: 'Filters', brand: 'CleanFlow', price: 25.50, cost: 15.00, stock: 50, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Filter' },
-            { id: 3, name: 'Ceramic Brake Pads (Set)', sku: 'CBP-789', category: 'Brakes', brand: 'StopRight', price: 95.99, cost: 60.00, stock: 8, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Brakes' },
-            { id: 4, name: 'Iridium Spark Plugs (4x)', sku: 'ISP-4PK', category: 'Engine Parts', brand: 'FirePoint', price: 35.00, cost: 22.00, stock: 80, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Plugs' },
-            { id: 5, name: 'All-Season Coolant (1G)', sku: 'ASC-1G', category: 'Fluids', brand: 'TempGuard', price: 22.75, cost: 14.00, stock: 60, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Coolant' },
-            { id: 6, name: 'LED Headlight Kit', sku: 'LED-H4', category: 'Lighting', brand: 'BrightBeam', price: 120.00, cost: 75.00, stock: 0, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=LED' },
-            { id: 7, name: 'Standard Oil Change', sku: 'SVC-OIL', category: 'Services', brand: 'GaragePro', price: 49.99, cost: 20.00, stock: 999, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Service' },
-            { id: 8, name: 'Tire Rotation', sku: 'SVC-TIRE', category: 'Services', brand: 'GaragePro', price: 29.99, cost: 10.00, stock: 999, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Service' },
-            { id: 9, name: 'Windshield Wipers (Pair)', sku: 'WW-22', category: 'Accessories', brand: 'ClearView', price: 28.50, cost: 16.00, stock: 45, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Wipers' },
-            { id: 10, name: 'Car Wash & Wax', sku: 'SVC-WASH', category: 'Services', brand: 'GaragePro', price: 19.99, cost: 5.00, stock: 999, imageUrl: 'https://placehold.co/200x200/1e293b/475569?text=Service' },
+            { id: 1, name: 'Premium Engine Oil (5L)', sku: 'SYN-5L', category: 'Lubricants', brand: 'PowerRev', price: 55.00, cost: 35.00, stock: 30 },
+            { id: 2, name: 'Performance Air Filter', sku: 'PAF-300', category: 'Filters', brand: 'CleanFlow', price: 25.50, cost: 15.00, stock: 50 },
+            { id: 3, name: 'Ceramic Brake Pads (Set)', sku: 'CBP-789', category: 'Brakes', brand: 'StopRight', price: 95.99, cost: 60.00, stock: 8 }, // low stock
+            { id: 4, name: 'Iridium Spark Plugs (4x)', sku: 'ISP-4PK', category: 'Engine Parts', brand: 'FirePoint', price: 35.00, cost: 22.00, stock: 80 },
+            { id: 5, name: 'All-Season Coolant (1G)', sku: 'ASC-1G', category: 'Fluids', brand: 'TempGuard', price: 22.75, cost: 14.00, stock: 60 },
+            { id: 6, name: 'LED Headlight Kit', sku: 'LED-H4', category: 'Lighting', brand: 'BrightBeam', price: 120.00, cost: 75.00, stock: 0 }, // out of stock
+            { id: 7, name: 'Standard Oil Change', sku: 'SVC-OIL', category: 'Services', brand: 'GaragePro', price: 49.99, cost: 20.00, stock: 999 },
+            { id: 8, name: 'Tire Rotation', sku: 'SVC-TIRE', category: 'Services', brand: 'GaragePro', price: 29.99, cost: 10.00, stock: 999 },
+            { id: 9, name: 'Windshield Wipers (Pair)', sku: 'WW-22', category: 'Accessories', brand: 'ClearView', price: 28.50, cost: 16.00, stock: 45 },
+            { id: 10, name: 'Car Wash & Wax', sku: 'SVC-WASH', category: 'Services', brand: 'GaragePro', price: 19.99, cost: 5.00, stock: 999 },
         ];
         
         const today = new Date();
@@ -350,9 +291,18 @@ const App = {
     applyTheme() { document.documentElement.classList.add('dark'); },
     
     attachEventListeners() {
-        document.getElementById('mobile-menu-button').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        });
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+        const toggleMobileMenu = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        };
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
+
         document.getElementById('lang-switcher').addEventListener('click', e => {
             const langBtn = e.target.closest('.lang-btn');
             if (langBtn && this.state.language !== langBtn.dataset.lang) {
@@ -473,35 +423,35 @@ const App = {
         const stats = this.getDashboardStats();
         const stockAlerts = this.getStockAlerts();
         page.innerHTML = `
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('dashboard')}</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('dashboard')}</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalIncome')}</h2><p class="text-3xl font-bold text-green-500">${this.formatCurrency(stats.totalIncome)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalExpense')}</h2><p class="text-3xl font-bold text-red-500">${this.formatCurrency(stats.totalExpense)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('netProfit')}</h2><p class="text-3xl font-bold text-blue-500">${this.formatCurrency(stats.netProfit)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-gray-600 dark:text-gray-400 text-lg font-bold">${this.t('totalSales')}</h2><p class="text-3xl font-bold text-indigo-500">${stats.totalSales}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalIncome')}</h2><p class="text-2xl sm:text-3xl font-bold text-green-500">${this.formatCurrency(stats.totalIncome)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalExpense')}</h2><p class="text-2xl sm:text-3xl font-bold text-red-500">${this.formatCurrency(stats.totalExpense)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('netProfit')}</h2><p class="text-2xl sm:text-3xl font-bold text-blue-500">${this.formatCurrency(stats.netProfit)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalSales')}</h2><p class="text-2xl sm:text-3xl font-bold text-indigo-500">${stats.totalSales}</p></div>
             </div>
              <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('outOfStockSoon')}</h2>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('outOfStockSoon')}</h2>
                     <ul class="space-y-2">${stockAlerts.soon.map(p => `<li class="flex justify-between items-center text-sm"><span class="flex items-center"><span class="w-2 h-2 rounded-full bg-yellow-400 mr-3"></span>${p.name}</span> <span class="font-bold">${p.stock} left</span></li>`).join('') || `<p class="text-gray-500 dark:text-gray-400 text-sm">${this.t('noTransactions')}</p>`}</ul>
                 </div>
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('outOfStock')}</h2>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('outOfStock')}</h2>
                      <ul class="space-y-2">${stockAlerts.out.map(p => `<li class="flex items-center text-sm"><span class="w-2 h-2 rounded-full bg-red-500 mr-3"></span>${p.name}</li>`).join('') || `<p class="text-gray-500 dark:text-gray-400 text-sm">${this.t('noTransactions')}</p>`}</ul>
                 </div>
             </div>
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                  <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('monthlyIncomeBreakdown')}</h2>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('monthlyIncomeBreakdown')}</h2>
                     <div id="income-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center"></div>
                 </div>
                  <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('monthlyExpenseBreakdown')}</h2>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('monthlyExpenseBreakdown')}</h2>
                     <div id="expense-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center"></div>
                 </div>
             </div>
             <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('weeklyPerformance')}</h2>
+                <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('weeklyPerformance')}</h2>
                 <div class="relative h-96"><canvas id="incomeExpenseChart"></canvas></div>
             </div>
         `;
@@ -705,7 +655,7 @@ const App = {
         const productList = document.getElementById('product-list');
         if(productList) {
             productList.addEventListener('click', e => { 
-                const infoDiv = e.target.closest('.product-card-info');
+                const infoDiv = e.target.closest('.product-card');
                 if (infoDiv) {
                     this.addToCart(parseInt(infoDiv.dataset.id));
                 }
@@ -736,39 +686,32 @@ const App = {
         this.state.products.filter(p => (p.name.toLowerCase().includes(search) || p.sku.toLowerCase().includes(search)) && (!category || p.category === category) && (!brand || p.brand === brand))
         .forEach(p => {
             const card = document.createElement('div');
-            card.className = 'bg-slate-800/50 rounded-lg flex flex-col overflow-hidden transition-all duration-200';
+            card.className = 'product-card bg-slate-800/50 rounded-lg p-3 flex flex-col text-center cursor-pointer hover:bg-slate-700/80 transition-all duration-200 h-full';
+            card.dataset.id = p.id;
             
-            const imgDiv = document.createElement('div');
-            imgDiv.className = 'h-28 bg-slate-700';
-            const img = document.createElement('img');
-            img.src = p.imageUrl || `https://placehold.co/200x200/1e293b/475569?text=${encodeURIComponent(p.name)}`;
-            img.alt = p.name;
-            img.className = 'w-full h-full object-cover';
-            img.onerror = function() { this.src = `https://placehold.co/200x200/1e293b/475569?text=${encodeURIComponent(p.name)}`; };
-            imgDiv.appendChild(img);
-
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'product-card-info p-3 text-center cursor-pointer hover:bg-slate-700/80 flex-grow flex flex-col';
-            infoDiv.dataset.id = p.id;
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'flex-grow flex flex-col justify-center';
             
             const nameEl = document.createElement('p');
-            nameEl.className = 'font-bold text-sm text-gray-100 flex-grow';
+            nameEl.className = 'font-bold text-sm text-gray-100';
             nameEl.textContent = p.name;
-            
+            contentWrapper.appendChild(nameEl);
+
+            const footerWrapper = document.createElement('div');
+            footerWrapper.className = 'mt-3';
+
             const stockEl = document.createElement('p');
-            stockEl.className = 'text-xs text-gray-400 mt-1';
+            stockEl.className = 'text-xs text-gray-400';
             stockEl.textContent = p.stock > 0 ? `${p.stock} ${this.t('stock')}` : 'Out of Stock';
+            footerWrapper.appendChild(stockEl);
             
             const priceEl = document.createElement('p');
-            priceEl.className = 'font-bold text-lg text-indigo-400 mt-1';
+            priceEl.className = 'font-bold text-lg text-indigo-400';
             priceEl.textContent = this.formatCurrency(p.price);
+            footerWrapper.appendChild(priceEl);
 
-            infoDiv.appendChild(nameEl);
-            infoDiv.appendChild(stockEl);
-            infoDiv.appendChild(priceEl);
-
-            card.appendChild(imgDiv);
-            card.appendChild(infoDiv);
+            card.appendChild(contentWrapper);
+            card.appendChild(footerWrapper);
             productList.appendChild(card);
         });
     },
@@ -848,121 +791,11 @@ const App = {
     renderProductTable() { const tbody = document.getElementById('product-table-body'); if (!tbody) return; tbody.innerHTML = ''; this.state.products.forEach(p => { const tr = document.createElement('tr'); tr.className = 'bg-white dark:bg-slate-800 border-b dark:border-slate-700'; tr.innerHTML = `<td class="px-6 py-4">${p.sku}</td><th scope="row" class="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">${p.name}</th><td class="px-6 py-4">${p.category}</td><td class="px-6 py-4">${this.formatCurrency(p.price)}</td><td class="px-6 py-4">${this.formatCurrency(p.cost)}</td><td class="px-6 py-4">${p.stock}</td><td class="px-6 py-4"><button class="btn-edit-product text-blue-500 hover:underline mr-2" data-id="${p.id}">${this.t('edit')}</button><button class="btn-delete-product text-red-500 hover:underline" data-id="${p.id}">${this.t('delete')}</button></td>`; tbody.appendChild(tr); }); tbody.addEventListener('click', e => { if (e.target.matches('.btn-edit-product')) this.showProductModal(this.state.products.find(p => p.id == e.target.dataset.id)); if (e.target.matches('.btn-delete-product')) this.showAlert(this.t('confirmDeleteProduct'), () => { this.state.products = this.state.products.filter(p => p.id != e.target.dataset.id); this.saveDataToFirestore(); this.renderProductTable(); }, true); }); },
     renderTransactions() { const page = document.getElementById('page-transactions'); page.innerHTML = `<div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4"><h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${this.t('transactions')}</h1><div class="flex-shrink-0"><button id="btn-add-income" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 mr-2">${this.t('addIncome')}</button><button id="btn-add-expense" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">${this.t('addExpense')}</button></div></div><div class="mb-4"><div class="flex flex-wrap gap-2 bg-gray-200 dark:bg-slate-800 p-1 rounded-lg" id="transaction-date-filters">${['all', 'today', 'weekly', 'monthly', 'yearly'].map(f => `<button class="filter-btn flex-1 px-3 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300" data-filter="${f}">${this.t(f)}</button>`).join('')}</div></div><div class="flex flex-col md:flex-row gap-4 mb-4"><div class="flex flex-wrap gap-2 bg-gray-200 dark:bg-slate-800 p-1 rounded-lg" id="transaction-type-filters">${[{val:'all', label:'all'}, {val:'income', label:'incomeAndSales'}, {val:'expense', label:'expenses'}].map(f => `<button class="filter-btn flex-1 px-3 py-2 text-sm font-medium rounded-md" data-filter="${f.val}">${this.t(f.label)}</button>`).join('')}</div><select id="customer-filter" class="border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-4 py-2 text-sm"><option value="all">${this.t('allCustomers')}</option>${this.state.customerTypes.map(c => `<option value="${this.sanitizeInput(c)}">${this.sanitizeInput(c)}</option>`).join('')}</select><input type="text" id="description-filter" placeholder="${this.t('searchDescription')}" class="flex-grow border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-4 py-2 text-sm"></div><div id="transaction-summary" class="grid grid-cols-2 gap-4 mb-4"></div><div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto"><table class="w-full text-sm text-left text-gray-500 dark:text-gray-400"><thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-700"><tr><th class="px-6 py-3">${this.t('date')}</th><th class="px-6 py-3">${this.t('type')}</th><th class="px-6 py-3">${this.t('description')}</th><th class="px-6 py-3">${this.t('amount')}</th><th class="px-6 py-3">${this.t('actions')}</th></tr></thead><tbody id="transaction-table-body"></tbody></table></div>`; document.getElementById('btn-add-income').addEventListener('click', () => this.showTransactionModal('income')); document.getElementById('btn-add-expense').addEventListener('click', () => this.showTransactionModal('expense')); const updateFilters = () => { this.state.transactionFilters.date = document.querySelector('#transaction-date-filters .bg-white')?.dataset.filter || 'all'; this.state.transactionFilters.type = document.querySelector('#transaction-type-filters .bg-white')?.dataset.filter || 'all'; this.state.transactionFilters.customer = document.getElementById('customer-filter').value; this.state.transactionFilters.description = document.getElementById('description-filter').value; this.renderTransactionTable(); }; document.getElementById('transaction-date-filters').addEventListener('click', e => { if (e.target.matches('.filter-btn')) { document.querySelectorAll('#transaction-date-filters .filter-btn').forEach(btn => btn.classList.remove('bg-white', 'dark:bg-slate-600', 'text-gray-900', 'dark:text-white', 'shadow')); e.target.classList.add('bg-white', 'dark:bg-slate-600', 'text-gray-900', 'dark:text-white', 'shadow'); updateFilters(); } }); document.getElementById('transaction-type-filters').addEventListener('click', e => { if (e.target.matches('.filter-btn')) { document.querySelectorAll('#transaction-type-filters .filter-btn').forEach(btn => btn.classList.remove('bg-white', 'dark:bg-slate-600', 'text-gray-900', 'dark:text-white', 'shadow')); e.target.classList.add('bg-white', 'dark:bg-slate-600', 'text-gray-900', 'dark:text-white', 'shadow'); updateFilters(); } }); document.getElementById('customer-filter').addEventListener('change', updateFilters); document.getElementById('description-filter').addEventListener('input', updateFilters); this.renderTransactionTable(); },
     renderTransactionTable() { const tbody = document.getElementById('transaction-table-body'); if (!tbody) return; const { date, type, customer, description } = this.state.transactionFilters; const now = new Date(); now.setHours(0,0,0,0); const filtered = this.state.transactions.filter(t => { const d = new Date(t.date); d.setHours(0,0,0,0); const dateMatch = date === 'all' || (date === 'today' && d.getTime() === now.getTime()) || (date === 'weekly' && (() => { const first = new Date(now); first.setDate(now.getDate() - now.getDay()); const last = new Date(first); last.setDate(first.getDate() + 6); return d >= first && d <= last; })()) || (date === 'monthly' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) || (date === 'yearly' && d.getFullYear() === now.getFullYear()); const typeMatch = type === 'all' || (type === 'income' && ['income', 'sale'].includes(t.type)) || (type === 'expense' && t.type === 'expense'); const customerMatch = customer === 'all' || (t.type === 'sale' && t.saleType === customer) || (t.type !== 'sale' && customer === 'all'); const descriptionMatch = !description || t.description.toLowerCase().includes(description.toLowerCase()); return dateMatch && typeMatch && customerMatch && descriptionMatch; }); const income = filtered.filter(t => ['income', 'sale'].includes(t.type)).reduce((s, t) => s + t.amount, 0), expense = filtered.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0); document.getElementById('transaction-summary').innerHTML = `<div class="bg-green-100 dark:bg-green-900/50 p-4 rounded-lg"><h3 class="text-green-800 dark:text-green-300 font-bold">${this.t('totalIncome')}</h3><p class="text-2xl font-bold text-green-600 dark:text-green-400">${this.formatCurrency(income)}</p></div><div class="bg-red-100 dark:bg-red-900/50 p-4 rounded-lg"><h3 class="text-red-800 dark:text-red-300 font-bold">${this.t('totalExpense')}</h3><p class="text-2xl font-bold text-red-600 dark:text-red-400">${this.formatCurrency(expense)}</p></div>`; document.querySelectorAll('#transaction-date-filters .filter-btn').forEach(btn => { const isActive = btn.dataset.filter === date; btn.classList.toggle('bg-white', isActive); btn.classList.toggle('dark:bg-slate-600', isActive); btn.classList.toggle('text-gray-900', isActive); btn.classList.toggle('dark:text-white', isActive); btn.classList.toggle('shadow', isActive); }); document.querySelectorAll('#transaction-type-filters .filter-btn').forEach(btn => { const isActive = btn.dataset.filter === type; btn.classList.toggle('bg-white', isActive); btn.classList.toggle('dark:bg-slate-600', isActive); btn.classList.toggle('text-gray-900', isActive); btn.classList.toggle('dark:text-white', isActive); btn.classList.toggle('shadow', isActive); }); const sorted = [...filtered].sort((a,b) => new Date(b.date) - new Date(a.date)); if(sorted.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 dark:text-gray-400 font-bold">${this.t('noTransactions')}</td></tr>`; return; } tbody.innerHTML = sorted.map(t => `<tr class="bg-white dark:bg-slate-800 border-b dark:border-slate-700"><td class="px-6 py-4">${t.date}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs font-semibold ${t.type==='income'?'text-green-600 bg-green-100 dark:text-green-300 dark:bg-green-900/50':t.type==='expense'?'text-red-600 bg-red-100 dark:text-red-300 dark:bg-red-900/50':'text-blue-600 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/50'}">${t.type[0].toUpperCase()+t.type.slice(1)}</span></td><th scope="row" class="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">${t.description}</th><td class="px-6 py-4 font-bold ${t.type==='expense'?'text-red-500':'text-green-500'}">${this.formatCurrency(t.amount)}</td><td class="px-6 py-4">${t.type==='sale'?`<button class="btn-view-invoice text-blue-500 hover:underline" data-id="${t.id}">${this.t('view')}</button>`:`<button class="btn-delete-transaction text-red-500 hover:underline" data-id="${t.id}">${this.t('delete')}</button>`}</td></tr>`).join(''); tbody.addEventListener('click', e => { if (e.target.matches('.btn-view-invoice')) this.showInvoiceModal(this.state.transactions.find(t => t.id == e.target.dataset.id)); else if (e.target.matches('.btn-delete-transaction')) this.showAlert(this.t('confirmDeleteTransaction'), () => { this.state.transactions = this.state.transactions.filter(t => t.id != e.target.dataset.id); this.saveDataToFirestore(); this.renderTransactionTable(); }, true); }); },
-    renderSettings() { const page = document.getElementById('page-settings'); const { settings } = this.state; page.innerHTML = `<h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('settings')}</h1><div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md max-w-md"><form id="settings-form"><div class="mb-4"><label for="businessName" class="block font-bold mb-2">${this.t('businessName')}</label><input type="text" id="businessName" name="businessName" value="${this.sanitizeInput(settings.businessName)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="currency" class="block font-bold mb-2">${this.t('currencySymbol')}</label><input type="text" id="currency" name="currency" value="${this.sanitizeInput(settings.currency)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="taxRate" class="block font-bold mb-2">${this.t('taxPercentage')}</label><input type="number" id="taxRate" name="taxRate" step="0.01" value="${settings.taxRate}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="flex flex-wrap gap-2"><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">${this.t('saveSettings')}</button><button type="button" id="btn-share-menu" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">${this.t('shareMenu')}</button><button type="button" id="btn-preview-menu" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">${this.t('previewMenu')}</button></div></form></div>`; document.getElementById('settings-form').addEventListener('submit', e => { e.preventDefault(); const d = new FormData(e.target); this.state.settings.businessName = d.get('businessName'); this.state.settings.currency = d.get('currency'); this.state.settings.taxRate = parseFloat(d.get('taxRate')) || 0; this.saveDataToFirestore(); this.showAlert(this.t('settingsSaved')); }); document.getElementById('btn-share-menu').addEventListener('click', () => this.showShareMenuModal()); document.getElementById('btn-preview-menu').addEventListener('click', () => { const url = `${window.location.origin}${window.location.pathname}#/menu/${this.state.user.uid}`; window.open(url, '_blank'); }); },
-    showProductModal(p = null) { const isEdit = p !== null, t = isEdit ? 'editProduct' : 'addNewProduct', s = this.sanitizeInput; document.getElementById('modals-container').innerHTML = `<div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-lg"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="product-form"><input type="hidden" name="id" value="${isEdit?p.id:''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${Object.entries({name:'productName',sku:'sku',category:'category',brand:'brand',price:'sellingPrice',cost:'costPrice',stock:'stockQuantity'}).map(([k,ph])=>`<input name="${k}" type="${['price','cost','stock'].includes(k)?'number':'text'}" step="${['price','cost'].includes(k)?'0.01':'1'}" placeholder="${this.t(ph)}" class="p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?s(p[k]):''}">`).join('')}<div class="md:col-span-2"><label class="block mb-2 text-sm font-bold text-gray-400">${this.t('productImage')}</label><input name="imageFile" type="file" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"/></div></div><div class="flex justify-end mt-6"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">${isEdit?this.t('saveChanges'):this.t('addProduct')}</button></div></form></div></div>`; document.getElementById('product-modal').addEventListener('click', e => { if (e.target.id === 'product-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('product-form').addEventListener('submit', async e => { e.preventDefault(); const formData = new FormData(e.target); const newProductData = Object.fromEntries(formData.entries()); const imageFile = formData.get('imageFile'); document.getElementById('modals-container').innerHTML = ''; ['price','cost','stock'].forEach(k => newProductData[k]=parseFloat(newProductData[k]||0)); if (imageFile && imageFile.size > 0) { const imageRef = ref(storage, `product_images/${this.state.user.uid}/${Date.now()}_${imageFile.name}`); const snapshot = await uploadBytes(imageRef, imageFile); newProductData.imageUrl = await getDownloadURL(snapshot.ref); } else if (isEdit) { newProductData.imageUrl = p.imageUrl; } else { newProductData.imageUrl = ''; } delete newProductData.imageFile; if(isEdit){ const i=this.state.products.findIndex(pr=>pr.id==newProductData.id); this.state.products[i]={...this.state.products[i],...newProductData}; } else { newProductData.id=Date.now(); this.state.products.push(newProductData); } await this.saveDataToFirestore(); this.renderProductTable(); }); },
+    renderSettings() { const page = document.getElementById('page-settings'); const { settings } = this.state; page.innerHTML = `<h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('settings')}</h1><div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md max-w-md"><form id="settings-form"><div class="mb-4"><label for="businessName" class="block font-bold mb-2">${this.t('businessName')}</label><input type="text" id="businessName" name="businessName" value="${this.sanitizeInput(settings.businessName)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="currency" class="block font-bold mb-2">${this.t('currencySymbol')}</label><input type="text" id="currency" name="currency" value="${this.sanitizeInput(settings.currency)}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="mb-4"><label for="taxRate" class="block font-bold mb-2">${this.t('taxPercentage')}</label><input type="number" id="taxRate" name="taxRate" step="0.01" value="${settings.taxRate}" class="w-full px-3 py-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></div><div class="flex flex-wrap gap-2"><button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">${this.t('saveSettings')}</button></div></form></div>`; document.getElementById('settings-form').addEventListener('submit', e => { e.preventDefault(); const d = new FormData(e.target); this.state.settings.businessName = d.get('businessName'); this.state.settings.currency = d.get('currency'); this.state.settings.taxRate = parseFloat(d.get('taxRate')) || 0; this.saveDataToFirestore(); this.showAlert(this.t('settingsSaved')); }); },
+    showProductModal(p = null) { const isEdit = p !== null, t = isEdit ? 'editProduct' : 'addNewProduct', s = this.sanitizeInput; document.getElementById('modals-container').innerHTML = `<div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-lg"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="product-form"><input type="hidden" name="id" value="${isEdit?p.id:''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${Object.entries({name:'productName',sku:'sku',category:'category',brand:'brand',price:'sellingPrice',cost:'costPrice',stock:'stockQuantity'}).map(([k,ph])=>`<input name="${k}" type="${['price','cost','stock'].includes(k)?'number':'text'}" step="${['price','cost'].includes(k)?'0.01':'1'}" placeholder="${this.t(ph)}" class="p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?s(p[k]):''}">`).join('')}</div><div class="flex justify-end mt-6"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">${isEdit?this.t('saveChanges'):this.t('addProduct')}</button></div></form></div></div>`; document.getElementById('product-modal').addEventListener('click', e => { if (e.target.id === 'product-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('product-form').addEventListener('submit', async e => { e.preventDefault(); const formData = new FormData(e.target); const newProductData = Object.fromEntries(formData.entries()); document.getElementById('modals-container').innerHTML = ''; ['price','cost','stock'].forEach(k => newProductData[k]=parseFloat(newProductData[k]||0)); newProductData.imageUrl = ''; if(isEdit){ const i=this.state.products.findIndex(pr=>pr.id==newProductData.id); this.state.products[i]={...this.state.products[i],...newProductData}; } else { newProductData.id=Date.now(); this.state.products.push(newProductData); } await this.saveDataToFirestore(); this.renderProductTable(); }); },
     showTransactionModal(type) { const t=type==='income'?'addIncome':'addExpense'; document.getElementById('modals-container').innerHTML = `<div id="transaction-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-md"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="transaction-form"><input name="description" placeholder="${this.t('description')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><input name="amount" type="number" step="0.01" placeholder="${this.t('amount')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><input name="date" type="date" value="${this.formatDate(new Date())}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><div class="flex justify-end mt-4"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 ${type==='income'?'bg-green-500':'bg-red-500'} text-white rounded">${this.t('add')}</button></div></form></div></div>`; document.getElementById('transaction-modal').addEventListener('click', e => { if (e.target.id === 'transaction-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('transaction-form').addEventListener('submit', e => { e.preventDefault(); document.getElementById('modals-container').innerHTML = ''; const n = Object.fromEntries(new FormData(e.target).entries()); n.id = Date.now(); n.type = type; n.amount = parseFloat(n.amount); this.state.transactions.push(n); this.saveDataToFirestore(); this.renderTransactionTable(); }); },
-    showAddCustomerTypeModal() { document.getElementById('modals-container').innerHTML = `<div id="customer-type-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm"><h2 class="text-2xl font-bold mb-4">${this.t('addNewCustomerType')}</h2><form id="customer-type-form"><input name="name" placeholder="${this.t('customerTypeName')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded mb-4" required><div class="flex justify-end"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">${this.t('add')}</button></div></form></div></div>`; document.getElementById('customer-type-modal').addEventListener('click', e => { if (e.target.id === 'customer-type-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('customer-type-form').addEventListener('submit', e => { e.preventDefault(); const name = new FormData(e.target).get('name').trim(); if (name && !this.state.customerTypes.includes(name)) { this.state.customerTypes.push(name); this.saveDataToFirestore(); } document.getElementById('modals-container').innerHTML = ''; this.renderPOS(); }); },
-    showShareMenuModal() { const url = `${window.location.origin}${window.location.pathname}#/menu/${this.state.user.uid}`; document.getElementById('modals-container').innerHTML = `<div id="share-menu-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><h2 class="text-2xl font-bold mb-4">${this.t('shareMenu')}</h2><p class="mb-4">${this.t('scanToViewMenu')}</p><div id="qrcode-container" class="flex justify-center mb-4 bg-white p-4 rounded-lg"><div id="qrcode"></div></div><div class="flex justify-end"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded">${this.t('done')}</button></div></div></div>`; new QRCode(document.getElementById("qrcode"), { text: url, width: 256, height: 256, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H }); document.getElementById('share-menu-modal').addEventListener('click', e => { if (e.target.id === 'share-menu-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); },
     showInvoiceModal(t) { document.getElementById('modals-container').innerHTML = `<div id="invoice-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-lg"><div id="invoice-content"></div><div class="flex justify-end mt-4 px-4"><button type="button" id="btn-download-invoice" class="px-4 py-2 bg-green-500 text-white rounded mr-2 hover:bg-green-600">${this.t('download')}</button><button id="btn-print-invoice" class="px-4 py-2 bg-gray-500 text-white rounded mr-2 hover:bg-gray-600">${this.t('print')}</button><button type="button" id="btn-invoice-done" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">${this.t('done')}</button></div></div></div>`; const el = document.getElementById('invoice-content'); el.className = 'p-4 text-gray-800 dark:text-gray-200'; const { settings } = this.state; el.innerHTML = `<h2 class="text-2xl font-bold text-center mb-2">${settings.businessName}</h2><p class="text-center text-gray-600 dark:text-gray-400 mb-6">${this.t('invoice')}</p><div class="flex justify-between text-sm mb-4"><p><strong>${this.t('invoiceNo')}</strong> ${t.id}<br><strong>${this.t('date')}:</strong> ${t.date}</p><p><strong>${this.t('billedTo')}:</strong><br>${t.description.replace('Sale to ', '')}</p></div><table class="w-full text-sm text-left mb-4"><thead class="border-b dark:border-slate-700"><tr><th class="py-2">${this.t('item')}</th><th class="py-2 text-center">${this.t('qty')}</th><th class="py-2 text-right">${this.t('price')}</th><th class="py-2 text-right">${this.t('total')}</th></tr></thead><tbody>${t.items.map(i => `<tr class="border-b dark:border-slate-700"><td class="py-2">${i.name}</td><td class="py-2 text-center">${i.quantity}</td><td class="py-2 text-right">${this.formatCurrency(i.price)}</td><td class="py-2 text-right">${this.formatCurrency(i.price*i.quantity)}</td></tr>`).join('')}</tbody></table><div class="flex justify-end text-sm"><div class="w-1/2 space-y-1"><div class="flex justify-between"><span>${this.t('subtotal')}:</span><span>${this.formatCurrency(t.subtotal)}</span></div><div class="flex justify-between"><span>${this.t('tax')}:</span><span>${this.formatCurrency(t.taxAmount)}</span></div><div class="flex justify-between"><span>${this.t('discount')}:</span><span>-${this.formatCurrency(t.discountAmount)}</span></div><div class="flex justify-between"><span>${this.t('shipping')}:</span><span>${this.formatCurrency(t.shippingAmount)}</span></div><div class="flex justify-between font-bold text-base border-t dark:border-slate-600 pt-1 mt-1"><span>${this.t('total')}:</span><span>${this.formatCurrency(t.amount)}</span></div></div></div>`; document.getElementById('invoice-modal').addEventListener('click', e => { if (e.target.id === 'invoice-modal') document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('btn-invoice-done').addEventListener('click', () => { document.getElementById('modals-container').innerHTML = ''; this.Router.navigate('transactions'); }); document.getElementById('btn-download-invoice').addEventListener('click', () => { html2canvas(document.getElementById('invoice-content'), { backgroundColor: '#1e293b', scale: 2 }).then(canvas => { const link = document.createElement('a'); link.download = `invoice-${t.id}.png`; link.href = canvas.toDataURL('image/png'); link.click(); }); }); document.getElementById('btn-print-invoice').addEventListener('click', () => { const pw = window.open('','','height=600,width=800'); pw.document.write(`<html><head><title>Invoice</title><script src="https://cdn.tailwindcss.com"><\/script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Kantumruy:wght@400;700&display=swap" rel="stylesheet"><style>body{font-family:${this.state.language==='km'?"'Kantumruy',sans-serif":"'Inter',sans-serif"};margin:0;padding:0;display:flex;justify-content:center;align-items:flex-start;background-color:#f4f4f4;}.invoice-box{width:100%;max-width:400px;margin:20px;padding:30px;border:1px solid #eee;box-shadow:0 0 10px rgba(0,0,0,0.15);font-size:16px;line-height:24px;color:#555;background:#fff;}</style></head><body><div class="invoice-box">${el.innerHTML}</div></body></html>`); pw.document.close(); pw.print(); }); },
     showAlert(m, onConfirm = null, isConfirmation = false) { document.getElementById('modals-container').innerHTML = `<div id="alert-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><p class="text-lg mb-6">${m}</p><div class="flex ${isConfirmation?'justify-center':'justify-end'} gap-4">${isConfirmation?`<button id="alert-cancel" class="px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded hover:bg-gray-400">${this.t('cancelModal')}</button>`:''}<button id="alert-ok" class="px-4 py-2 ${isConfirmation?'bg-red-500':'bg-indigo-600'} text-white rounded">${isConfirmation?this.t('delete'):this.t('ok')}</button></div></div></div>`; const close = () => document.getElementById('modals-container').innerHTML = ''; document.getElementById('alert-ok').addEventListener('click', () => { if (onConfirm) onConfirm(); close(); }); if (isConfirmation) document.getElementById('alert-cancel').addEventListener('click', close); },
-
-    CustomerView: {
-        state: {
-            products: [],
-            settings: {},
-            cart: []
-        },
-        init(userData) {
-            this.state.products = userData.products || [];
-            this.state.settings = userData.settings || {};
-            this.render();
-        },
-        render() {
-            const screen = document.getElementById('customer-menu-screen');
-            screen.innerHTML = `
-                <div class="max-w-md mx-auto p-4">
-                    <h1 class="text-3xl font-bold text-center mb-4">${this.state.settings.businessName || 'Menu'}</h1>
-                    <div id="customer-product-list" class="space-y-4"></div>
-                    <div id="customer-cart-bar" class="fixed bottom-0 left-0 right-0 bg-slate-800 p-4 shadow-lg flex justify-between items-center">
-                        <span id="customer-cart-total" class="font-bold">Cart is empty</span>
-                        <button id="customer-place-order" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold" disabled>Place Order</button>
-                    </div>
-                </div>
-            `;
-            this.renderProducts();
-            this.attachEventListeners();
-        },
-        renderProducts() {
-            const listEl = document.getElementById('customer-product-list');
-            listEl.innerHTML = this.state.products.map(p => `
-                <div class="flex items-center gap-4 bg-slate-800 p-3 rounded-lg">
-                    <div class="flex-1">
-                        <p class="font-bold">${p.name}</p>
-                        <p class="text-indigo-400 font-semibold">${App.formatCurrency(p.price)}</p>
-                    </div>
-                    <button data-id="${p.id}" class="btn-customer-add-cart bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xl">+</button>
-                </div>
-            `).join('');
-        },
-        attachEventListeners(){
-            document.getElementById('customer-product-list').addEventListener('click', e => {
-                if(e.target.matches('.btn-customer-add-cart')){
-                    const productId = parseInt(e.target.dataset.id);
-                    this.addToCart(productId);
-                }
-            });
-            document.getElementById('customer-place-order').addEventListener('click', () => this.showOrderSummary());
-        },
-        addToCart(productId){
-            const product = this.state.products.find(p => p.id === productId);
-            if (!product) return;
-            const cartItem = this.state.cart.find(item => item.id === productId);
-            if (cartItem) {
-                cartItem.quantity++;
-            } else {
-                this.state.cart.push({ ...product, quantity: 1 });
-            }
-            this.updateCartBar();
-        },
-        updateCartBar(){
-            const totalItems = this.state.cart.reduce((sum, item) => sum + item.quantity, 0);
-            const totalAmount = this.state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalEl = document.getElementById('customer-cart-total');
-            const orderBtn = document.getElementById('customer-place-order');
-            if(totalItems > 0){
-                totalEl.textContent = `${totalItems} items: ${App.formatCurrency(totalAmount)}`;
-                orderBtn.disabled = false;
-            } else {
-                totalEl.textContent = 'Cart is empty';
-                orderBtn.disabled = true;
-            }
-        },
-        showOrderSummary(){
-             const subtotal = this.state.cart.reduce((s, i) => s + (i.price*i.quantity), 0);
-             const taxAmount = subtotal * (this.state.settings.taxRate/100);
-             const total = subtotal + taxAmount;
-             const modalHTML = `
-                <div class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop">
-                    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm">
-                        <h2 class="text-2xl font-bold mb-4 text-center">${App.t('orderSummary')}</h2>
-                        <p class="text-center text-sm mb-4">${App.t('showThisToCashier')}</p>
-                        <div class="space-y-2 text-sm">
-                            ${this.state.cart.map(item => `
-                                <div class="flex justify-between">
-                                    <span>${item.quantity} x ${item.name}</span>
-                                    <span>${App.formatCurrency(item.price * item.quantity)}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="border-t dark:border-slate-600 mt-4 pt-4 space-y-2 font-bold text-sm">
-                             <div class="flex justify-between"><span>${App.t('subtotal')}:</span><span>${App.formatCurrency(subtotal)}</span></div>
-                             <div class="flex justify-between"><span>${App.t('tax')} (${this.state.settings.taxRate}%):</span><span>${App.formatCurrency(taxAmount)}</span></div>
-                             <div class="flex justify-between text-lg"><span>${App.t('total')}:</span><span>${App.formatCurrency(total)}</span></div>
-                        </div>
-                         <div class="flex justify-end mt-6">
-                            <button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded">${App.t('done')}</button>
-                        </div>
-                    </div>
-                </div>
-             `;
-            document.getElementById('modals-container').innerHTML = modalHTML;
-            document.querySelector('#modals-container').addEventListener('click', e => {
-                if(e.target.matches('.btn-close-modal') || e.target.matches('.modal-backdrop')){
-                    document.getElementById('modals-container').innerHTML = '';
-                }
-            })
-        }
-    }
 };
 document.addEventListener('DOMContentLoaded', () => App.init());
 </script>
