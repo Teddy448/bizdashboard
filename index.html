@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Dashboard</title>
+    <title>BizMafia Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Force dark theme immediately
@@ -11,7 +11,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy:wght@400;700&display=swap" rel="stylesheet">
@@ -73,7 +72,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-storage.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAbpdk_2XZi5SFrz1zHFP4sdvbNMZKNcdM",
@@ -87,7 +85,6 @@
     const firebaseApp = initializeApp(firebaseConfig);
     const auth = getAuth(firebaseApp);
     const db = getFirestore(firebaseApp);
-    const storage = getStorage(firebaseApp);
 
 const App = {
     // STATE MANAGEMENT
@@ -103,6 +100,9 @@ const App = {
         products: [],
         transactions: [],
         suppliers: [],
+        dashboardView: 'values', // 'values' or 'growth'
+        growthPeriod: 'lastMonth', // 'lastMonth', 'last3Months', 'last6Months', 'lastYear'
+        showMoney: true,
         customerTypes: ['Walk-in Customer', 'Service', 'Online Purchase'], // This is now a static list
         pos: { 
             cart: [], 
@@ -116,26 +116,28 @@ const App = {
     i18n: {
         en: {
             login: 'Login', signup: 'Sign Up', email: 'Email', password: 'Password', loginToYourAccount: 'Login to your account', logout: 'Logout', invalidCredentials: 'Invalid email or password.',
-            bizDash: 'BizDash', dashboard: 'Dashboard', pos: 'Point of Sale', products: 'Products', transactions: 'Transactions', suppliers: 'Suppliers', settings: 'Settings', toggleSidebar: 'Toggle Sidebar',
+            bizDash: 'BizMafia', dashboard: 'Dashboard', pos: 'Point of Sale', products: 'Products', transactions: 'Transactions', suppliers: 'Suppliers', settings: 'Settings', toggleSidebar: 'Toggle Sidebar',
             totalIncome: 'Total Income', totalExpense: 'Total Expense', netProfit: 'Net Profit', totalSales: 'Total Sales', weeklyPerformance: 'Weekly Performance', income: 'Income', expense: 'Expense', outOfStockSoon: 'Out of Stock Soon', outOfStock: 'Out of Stock', monthlyExpenseBreakdown: 'Monthly Expense Breakdown', monthlyIncomeBreakdown: 'Monthly Income Breakdown', incomeAndSales: 'Income & Sales', expenses: 'Expenses', currentInventory: 'Current Inventory Levels',
+            growthComparison: 'Growth Comparison', lastMonth: 'vs. Last Month', last3Months: 'vs. Last 3 Months', last6Months: 'vs. Last 6 Months', lastYear: 'vs. Last Year', showValues: 'Show Values', showGrowth: 'Show Growth', hideMoney: 'Hide Money',
             currentOrder: 'Current Order', pay: 'Pay', cancel: 'Cancel', enterProductName: 'Enter Product Name / SKU', allCategories: 'All Categories', allBrands: 'All Brands', cartEmpty: 'Your cart is empty.', subtotal: 'Subtotal', tax: 'Tax', discount: 'Discount', shipping: 'Shipping', total: 'Total', cartIsEmpty: 'Cart is empty.', customerType: 'Customer Type', billedTo: 'Billed To',
             addProduct: 'Add Product', sku: 'SKU', product: 'Product', category: 'Category', price: 'Price', cost: 'Cost', stock: 'Stock', actions: 'Actions', edit: 'Edit', delete: 'Delete', confirmDeleteProduct: 'Are you sure you want to delete this product?',
             addIncome: 'Add Income', addExpense: 'Add Expense', all: 'All', allCustomers: 'All Customers', searchDescription: 'Search Description...', today: 'Today', weekly: 'This Week', monthly: 'This Month', yearly: 'This Year', date: 'Date', type: 'Type', description: 'Description', amount: 'Amount', noTransactions: 'No transactions found for this period.', view: 'View', confirmDeleteTransaction: 'Are you sure you want to delete this transaction?', isStockOrder: 'Is this a stock order?',
             businessName: 'Business Name', currencySymbol: 'Currency Symbol', taxPercentage: 'Tax (%)', saveSettings: 'Save Settings', settingsSaved: 'Settings saved!', showSuppliersMenu: 'Show Suppliers Menu',
             addSupplier: 'Add Supplier', supplierName: 'Supplier Name', contactInfo: 'Contact Info (e.g., Telegram)', orderStatus: 'Order Status', draft: 'Draft', delivery: 'Delivery', complete: 'Complete', editSupplier: 'Edit Supplier', confirmDeleteSupplier: 'Are you sure you want to delete this supplier?', addOrder: 'Add Order', orderAmount: 'Order Amount', itemsList: 'Items (one per line)', orderHistory: 'Order History', noOrders: 'No orders placed yet.', status: 'Status',
-            editProduct: 'Edit Product', addNewProduct: 'Add New Product', productName: 'Product Name', brand: 'Brand', sellingPrice: 'Selling Price', costPrice: 'Cost Price', stockQuantity: 'Stock Quantity', productImage: 'Product Image', cancelModal: 'Cancel', saveChanges: 'Save Changes', add: 'Add',
+            editProduct: 'Edit Product', addNewProduct: 'Add New Product', productName: 'Product Name', brand: 'Brand', sellingPrice: 'Selling Price', costPrice: 'Cost Price', stockQuantity: 'Stock Quantity', cancelModal: 'Cancel', saveChanges: 'Save Changes', add: 'Add',
             invoice: 'Invoice', invoiceNo: 'Invoice #', item: 'Item', qty: 'Qty', done: 'Done', print: 'Print', download: 'Download', ok: 'OK',
         },
         km: {
             login: 'ចូល', signup: 'ចុះឈ្មោះ', email: 'អ៊ីមែល', password: 'ពាក្យសម្ងាត់', loginToYourAccount: 'ចូលគណនីរបស់អ្នក', logout: 'ចាកចេញ', invalidCredentials: 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។',
-            bizDash: 'BizDash', dashboard: 'ផ្ទាំងគ្រប់គ្រង', pos: 'កន្លែង​លក់', products: 'ផលិតផល', transactions: 'ប្រតិបត្តិការ', suppliers: 'អ្នកផ្គត់ផ្គង់', settings: 'ការកំណត់', toggleSidebar: 'បិទ/បើកម៉ឺនុយចំហៀង',
+            bizDash: 'BizMafia', dashboard: 'ផ្ទាំងគ្រប់គ្រង', pos: 'កន្លែង​លក់', products: 'ផលិតផល', transactions: 'ប្រតិបត្តិការ', suppliers: 'អ្នកផ្គត់ផ្គង់', settings: 'ការកំណត់', toggleSidebar: 'បិទ/បើកម៉ឺនុយចំហៀង',
             totalIncome: 'ចំណូលសរុប', totalExpense: 'ចំណាយសរុប', netProfit: 'ប្រាក់ចំណេញសុទ្ធ', totalSales: 'ការលក់សរុប', weeklyPerformance: 'លទ្ធផលប្រចាំសប្តាហ៍', income: 'ចំណូល', expense: 'ចំណាយ', outOfStockSoon: 'ជិតអស់ពីស្តុក', outOfStock: 'អស់ពីស្តុក', monthlyExpenseBreakdown: 'ការបែងចែកចំណាយប្រចាំខែ', monthlyIncomeBreakdown: 'ការបែងចែកចំណូលប្រចាំខែ', incomeAndSales: 'ចំណូល & ការលក់', expenses: 'ចំណាយ', currentInventory: 'កម្រិត​ស្ដុក​បច្ចុប្បន្ន',
+            growthComparison: 'ការប្រៀបធៀបកំណើន', lastMonth: 'ធៀបនឹងខែមុន', last3Months: 'ធៀបនឹង 3 ខែមុន', last6Months: 'ធៀបនឹង 6 ខែមុន', lastYear: 'ធៀបនឹងឆ្នាំមុន', showValues: 'បង្ហាញតម្លៃ', showGrowth: 'បង្ហាញកំណើន', hideMoney: 'លាក់លុយ',
             currentOrder: 'ការបញ្ជាទិញបច្ចុប្បន្ន', pay: 'ទូទាត់', cancel: 'បោះបង់', enterProductName: 'បញ្ចូលឈ្មោះផលិតផល / SKU', allCategories: 'គ្រប់ប្រភេទ', allBrands: 'គ្រប់ម៉ាក', cartEmpty: 'រទេះរបស់អ្នកនៅទទេ', subtotal: 'សរុបរង', tax: 'ពន្ធ', discount: 'បញ្ចុះតម្លៃ', shipping: 'ដឹកជញ្ជូន', total: 'សរុប', cartIsEmpty: 'រទេះទទេ', customerType: 'ប្រភេទអតិថិជន', billedTo: 'ចេញវិក្កយបត្រជូន',
             addProduct: 'បន្ថែមផលិតផល', sku: 'SKU', product: 'ផលិតផល', category: 'ប្រភេទ', price: 'តម្លៃ', cost: 'ថ្លៃដើម', stock: 'ក្នុងស្តុក', actions: 'សកម្មភាព', edit: 'កែសម្រួល', delete: 'លុប', confirmDeleteProduct: 'តើអ្នកប្រាកដទេថាចង់លុបផលិតផលនេះ?',
             addIncome: 'បន្ថែមចំណូល', addExpense: 'បន្ថែមចំណាយ', all: 'ទាំងអស់', allCustomers: 'អតិថិជនទាំងអស់', searchDescription: 'ស្វែងរកតាមការពិពណ៌នា...', today: 'ថ្ងៃនេះ', weekly: 'សប្តាហ៍នេះ', monthly: 'ខែនេះ', yearly: 'ឆ្នាំនេះ', date: 'កាលបរិច្ឆេទ', type: 'ប្រភេទ', description: 'ការពិពណ៌នា', amount: 'ចំនួនទឹកប្រាក់', noTransactions: 'រកមិនឃើញប្រតិបត្តិការសម្រាប់រយៈពេលនេះទេ', view: 'មើល', confirmDeleteTransaction: 'តើអ្នកប្រាកដទេថាចង់លុបប្រតិបត្តិការនេះ?', isStockOrder: 'តើនេះជាការបញ្ជាទិញស្តុកមែនទេ?',
             businessName: 'ឈ្មោះអាជីវកម្ម', currencySymbol: 'និមិត្តសញ្ញារូបិយប័ណ្ណ', taxPercentage: 'ពន្ធ (%)', saveSettings: 'រក្សាទុកការកំណត់', settingsSaved: 'ការកំណត់ត្រូវបានរក្សាទុក!', showSuppliersMenu: 'បង្ហាញម៉ឺនុយអ្នកផ្គត់ផ្គង់',
             addSupplier: 'បន្ថែមអ្នកផ្គត់ផ្គង់', supplierName: 'ឈ្មោះអ្នកផ្គត់ផ្គង់', contactInfo: 'ព័ត៌មានទំនាក់ទំនង (ឧ. Telegram)', orderStatus: 'ស្ថានភាពការបញ្ជាទិញ', draft: 'ពង្រាង', delivery: 'កំពុងដឹកជញ្ជូន', complete: 'បានបញ្ចប់', editSupplier: 'កែសម្រួលអ្នកផ្គត់ផ្គង់', confirmDeleteSupplier: 'តើអ្នកប្រាកដទេថាចង់លុបអ្នកផ្គត់ផ្គង់នេះ?', addOrder: 'បន្ថែមការបញ្ជាទិញ', orderAmount: 'ចំនួនទឹកប្រាក់បញ្ជាទិញ', itemsList: 'รายการ (មួយបន្ទាត់មួយ)', orderHistory: 'ประวัติการสั่งซื้อ', noOrders: 'ยังไม่มีการสั่งซื้อ', status: 'สถานะ',
-            editProduct: 'កែសម្រួលផលិតផល', addNewProduct: 'បន្ថែមផលិតផលថ្មី', productName: 'ឈ្មោះ​ផលិតផល', brand: 'ម៉ាក', sellingPrice: 'តម្លៃលក់', costPrice: 'តម្លៃ​ដើម', stockQuantity: 'បរិមាណ​ក្នុង​ស្តុក', productImage: 'រូបភាពផលិតផល', cancelModal: 'បោះបង់', saveChanges: 'រក្សាទុកការផ្លាស់ប្តូរ', add: 'បន្ថែម',
+            editProduct: 'កែសម្រួលផលិតផល', addNewProduct: 'បន្ថែមផលិតផលថ្មី', productName: 'ឈ្មោះ​ផលិតផល', brand: 'ម៉ាក', sellingPrice: 'តម្លៃលក់', costPrice: 'តម្លៃ​ដើម', stockQuantity: 'បរិមាណ​ក្នុង​ស្តុក', cancelModal: 'បោះបង់', saveChanges: 'រក្សាទុកការផ្លាស់ប្តូរ', add: 'បន្ថែម',
             invoice: 'វិក័យប័ត្រ', invoiceNo: 'លេខវិក្កយបត្រ #', item: 'មុខទំនិញ', qty: 'បរិមាណ', done: 'រួចរាល់', print: 'បោះពុម្ព', download: 'ទាញយក', ok: 'យល់ព្រម',
         }
     },
@@ -371,8 +373,8 @@ const App = {
         navLinks.push('settings');
         sidebar.innerHTML = `
             <div class="flex-1">
-                <a href="#" class="text-white text-2xl font-semibold px-4 flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 14h.01M9 11h.01M12 11h.01M15 11h.01M5.897 21.003L12 17.5l6.103 3.503A1 1 0 0019 20.057V5a2 2 0 00-2-2H7a2 2 0 00-2 2v15.057a1 1 0 001.897.946z" /></svg>
+                <a href="#dashboard" class="text-white text-2xl font-semibold px-4 flex items-center space-x-2">
+                     <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z" fill="currentColor"/></svg>
                     <span class="${isExpanded ? 'opacity-100' : 'opacity-0 w-0'} transition-opacity duration-300">${this.t('bizDash')}</span>
                 </a>
                 <nav id="nav-menu" class="mt-10">
@@ -429,15 +431,26 @@ const App = {
     
     renderDashboard() {
         const page = document.getElementById('page-dashboard');
-        const stats = this.getDashboardStats();
         const stockAlerts = this.getStockAlerts();
         page.innerHTML = `
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">${this.t('dashboard')}</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalIncome')}</h2><p class="text-2xl sm:text-3xl font-bold text-green-500">${this.formatCurrency(stats.totalIncome)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalExpense')}</h2><p class="text-2xl sm:text-3xl font-bold text-red-500">${this.formatCurrency(stats.totalExpense)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('netProfit')}</h2><p class="text-2xl sm:text-3xl font-bold text-blue-500">${this.formatCurrency(stats.netProfit)}</p></div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalSales')}</h2><p class="text-2xl sm:text-3xl font-bold text-indigo-500">${stats.totalSales}</p></div>
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">${this.t('dashboard')}</h1>
+                <div class="flex items-center gap-4">
+                    <button id="hide-money-toggle" class="text-sm font-medium text-gray-400 hover:text-white">${this.t('hideMoney')}</button>
+                    <div class="flex items-center text-sm font-medium bg-slate-700 rounded-lg p-1">
+                        <button id="show-values-btn" class="px-3 py-1 rounded-md">${this.t('showValues')}</button>
+                        <button id="show-growth-btn" class="px-3 py-1 rounded-md">${this.t('showGrowth')}</button>
+                    </div>
+                     <select id="growth-period-select" class="border dark:border-slate-600 bg-slate-700 rounded-lg p-2 text-sm hidden">
+                        <option value="lastMonth">${this.t('lastMonth')}</option>
+                        <option value="last3Months">${this.t('last3Months')}</option>
+                        <option value="last6Months">${this.t('last6Months')}</option>
+                        <option value="lastYear">${this.t('lastYear')}</option>
+                    </select>
+                </div>
+            </div>
+            <div id="dashboard-stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Stats will be rendered here -->
             </div>
              <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
@@ -448,6 +461,10 @@ const App = {
                     <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('outOfStock')}</h2>
                      <ul class="space-y-2">${stockAlerts.out.map(p => `<li class="flex items-center text-sm"><span class="w-2 h-2 rounded-full bg-red-500 mr-3"></span>${p.name}</li>`).join('') || `<p class="text-gray-500 dark:text-gray-400 text-sm">${this.t('noTransactions')}</p>`}</ul>
                 </div>
+            </div>
+            <div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-700 dark:text-gray-200 mb-4">${this.t('currentInventory')}</h2>
+                <div class="relative h-96"><canvas id="inventory-chart"></canvas></div>
             </div>
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                  <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md">
@@ -464,14 +481,107 @@ const App = {
                 <div class="relative h-96"><canvas id="incomeExpenseChart"></canvas></div>
             </div>
         `;
+        this.renderDashboardStats();
+        document.getElementById('show-values-btn').addEventListener('click', () => { this.state.dashboardView = 'values'; this.renderDashboardStats(); });
+        document.getElementById('show-growth-btn').addEventListener('click', () => { this.state.dashboardView = 'growth'; this.renderDashboardStats(); });
+        document.getElementById('growth-period-select').addEventListener('change', (e) => { this.state.growthPeriod = e.target.value; this.renderDashboardStats(); });
+        document.getElementById('hide-money-toggle').addEventListener('click', () => { this.state.showMoney = !this.state.showMoney; this.renderDashboardStats(); });
+
         this.renderChart(this.getChartData());
         this.renderExpenseBreakdown();
         this.renderIncomeBreakdown();
+        this.renderInventoryChart();
     },
     getDashboardStats() {
-        const income = this.state.transactions.filter(t => ['income', 'sale'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0);
-        const expense = this.state.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-        return { totalIncome: income, totalExpense: expense, netProfit: income - expense, totalSales: this.state.transactions.filter(t => t.type === 'sale').length };
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        const currentTransactions = this.state.transactions.filter(t => {
+            const d = new Date(t.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        });
+
+        const income = currentTransactions.filter(t => ['income', 'sale'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0);
+        const expense = currentTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+        return { totalIncome: income, totalExpense: expense, netProfit: income - expense, totalSales: currentTransactions.filter(t => t.type === 'sale').length };
+    },
+    getPreviousPeriodStats(period) {
+        const now = new Date();
+        let startDate = new Date();
+
+        switch (period) {
+            case 'lastMonth':
+                startDate.setMonth(now.getMonth() - 1);
+                break;
+            case 'last3Months':
+                startDate.setMonth(now.getMonth() - 3);
+                break;
+            case 'last6Months':
+                startDate.setMonth(now.getMonth() - 6);
+                break;
+            case 'lastYear':
+                startDate.setFullYear(now.getFullYear() - 1);
+                break;
+        }
+
+        const previousTransactions = this.state.transactions.filter(t => {
+            const d = new Date(t.date);
+            return d >= startDate && d < now;
+        });
+
+        const income = previousTransactions.filter(t => ['income', 'sale'].includes(t.type)).reduce((sum, t) => sum + t.amount, 0);
+        const expense = previousTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+        return { totalIncome: income, totalExpense: expense, netProfit: income - expense, totalSales: previousTransactions.filter(t => t.type === 'sale').length };
+    },
+    renderDashboardStats() {
+        const container = document.getElementById('dashboard-stats');
+        const showValuesBtn = document.getElementById('show-values-btn');
+        const showGrowthBtn = document.getElementById('show-growth-btn');
+        const growthPeriodSelect = document.getElementById('growth-period-select');
+
+        if(this.state.dashboardView === 'values') {
+            showValuesBtn.classList.add('bg-indigo-600', 'text-white');
+            showGrowthBtn.classList.remove('bg-indigo-600', 'text-white');
+            growthPeriodSelect.classList.add('hidden');
+
+            const stats = this.getDashboardStats();
+            const displayValue = (val) => this.state.showMoney ? this.formatCurrency(val) : '***';
+            
+            container.innerHTML = `
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalIncome')}</h2><p class="text-2xl sm:text-3xl font-bold text-green-500">${displayValue(stats.totalIncome)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalExpense')}</h2><p class="text-2xl sm:text-3xl font-bold text-red-500">${displayValue(stats.totalExpense)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('netProfit')}</h2><p class="text-2xl sm:text-3xl font-bold text-blue-500">${displayValue(stats.netProfit)}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalSales')}</h2><p class="text-2xl sm:text-3xl font-bold text-indigo-500">${stats.totalSales}</p></div>
+            `;
+        } else { // Growth view
+            showGrowthBtn.classList.add('bg-indigo-600', 'text-white');
+            showValuesBtn.classList.remove('bg-indigo-600', 'text-white');
+            growthPeriodSelect.classList.remove('hidden');
+
+            const currentStats = this.getDashboardStats();
+            const previousStats = this.getPreviousPeriodStats(this.state.growthPeriod);
+            
+            const calcGrowth = (current, previous) => {
+                if (previous === 0) return current > 0 ? '∞%' : '0%';
+                const growth = ((current - previous) / previous) * 100;
+                return `${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`;
+            };
+
+            const growth = {
+                income: calcGrowth(currentStats.totalIncome, previousStats.totalIncome),
+                expense: calcGrowth(currentStats.totalExpense, previousStats.totalExpense),
+                netProfit: calcGrowth(currentStats.netProfit, previousStats.netProfit),
+                sales: calcGrowth(currentStats.totalSales, previousStats.totalSales),
+            };
+            
+            container.innerHTML = `
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalIncome')}</h2><p class="text-2xl sm:text-3xl font-bold ${growth.income.startsWith('+') ? 'text-green-500' : 'text-red-500'}">${growth.income}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalExpense')}</h2><p class="text-2xl sm:text-3xl font-bold ${growth.expense.startsWith('+') ? 'text-red-500' : 'text-green-500'}">${growth.expense}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('netProfit')}</h2><p class="text-2xl sm:text-3xl font-bold ${growth.netProfit.startsWith('+') ? 'text-green-500' : 'text-red-500'}">${growth.netProfit}</p></div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-md"><h2 class="text-base sm:text-lg font-bold text-gray-600 dark:text-gray-400">${this.t('totalSales')}</h2><p class="text-2xl sm:text-3xl font-bold ${growth.sales.startsWith('+') ? 'text-green-500' : 'text-red-500'}">${growth.sales}</p></div>
+            `;
+        }
     },
     getStockAlerts() {
         const soon = this.state.products.filter(p => p.stock > 0 && p.stock <= 10);
@@ -493,7 +603,7 @@ const App = {
     renderChart(chartData) {
         if (window.myChart) window.myChart.destroy();
         const canvas = document.getElementById('incomeExpenseChart');
-        if (!canvas) return; // Prevent error if canvas doesn't exist
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const isDark = document.documentElement.classList.contains('dark');
         const gridColor = '#334155', textColor = '#94a3b8';
@@ -614,6 +724,45 @@ const App = {
             }]
         };
         new Chart(chartCanvas, { type: 'doughnut', data: chartData, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+    },
+    renderInventoryChart() {
+        const canvas = document.getElementById('inventory-chart');
+        if (!canvas) return;
+        
+        const productData = this.state.products.filter(p => p.stock < 999); // Filter out services
+        const chartData = {
+            labels: productData.map(p => p.name),
+            datasets: [{
+                label: 'Stock Quantity',
+                data: productData.map(p => p.stock),
+                backgroundColor: '#4f46e5',
+            }]
+        };
+        
+        new Chart(canvas, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: '#334155' }
+                    },
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
     },
     
     renderPOS() {
@@ -807,7 +956,7 @@ const App = {
     showAlert(m, onConfirm = null, isConfirmation = false) { document.getElementById('modals-container').innerHTML = `<div id="alert-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center"><p class="text-lg mb-6">${m}</p><div class="flex ${isConfirmation?'justify-center':'justify-end'} gap-4">${isConfirmation?`<button id="alert-cancel" class="px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded hover:bg-gray-400">${this.t('cancelModal')}</button>`:''}<button id="alert-ok" class="px-4 py-2 ${isConfirmation?'bg-red-500':'bg-indigo-600'} text-white rounded">${isConfirmation?this.t('delete'):this.t('ok')}</button></div></div></div>`; const close = () => document.getElementById('modals-container').innerHTML = ''; document.getElementById('alert-ok').addEventListener('click', () => { if (onConfirm) onConfirm(); close(); }); if (isConfirmation) document.getElementById('alert-cancel').addEventListener('click', close); },
     renderSuppliers() { const page = document.getElementById('page-suppliers'); page.innerHTML = `<div class="flex justify-between items-center mb-6"><h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">${this.t('suppliers')}</h1><button id="btn-add-supplier" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">${this.t('addSupplier')}</button></div><div class="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-x-auto"><table class="w-full text-sm text-left text-gray-500 dark:text-gray-400"><thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-700"><tr><th class="px-6 py-3">${this.t('supplierName')}</th><th class="px-6 py-3">${this.t('orderStatus')}</th><th class="px-6 py-3">${this.t('actions')}</th></tr></thead><tbody id="supplier-table-body"></tbody></table></div>`; this.renderSupplierTable(); document.getElementById('btn-add-supplier').addEventListener('click', () => this.showSupplierModal()); },
     renderSupplierTable() { const tbody = document.getElementById('supplier-table-body'); if (!tbody) return; tbody.innerHTML = ''; this.state.suppliers.forEach(s => { const tr = document.createElement('tr'); tr.className = 'bg-white dark:bg-slate-800 border-b dark:border-slate-700'; const statusClasses = { draft: 'bg-gray-500', delivery: 'bg-blue-500', complete: 'bg-green-500' }; const statusOptions = ['draft', 'delivery', 'complete']; tr.innerHTML = `<th scope="row" class="px-6 py-4 font-bold text-gray-900 dark:text-white whitespace-nowrap">${s.name}</th><td class="px-6 py-4"><select class="supplier-status-select border dark:border-slate-600 bg-slate-700 rounded p-1 text-sm" data-id="${s.id}">${statusOptions.map(o => `<option value="${o}" ${s.status === o ? 'selected' : ''}>${this.t(o)}</option>`).join('')}</select></td><td class="px-6 py-4"><button class="btn-edit-supplier text-blue-500 hover:underline mr-2" data-id="${s.id}">${this.t('edit')}</button><button class="btn-delete-supplier text-red-500 hover:underline" data-id="${s.id}">${this.t('delete')}</button></td>`; tbody.appendChild(tr); }); tbody.addEventListener('click', e => { if (e.target.matches('.btn-edit-supplier')) this.showSupplierModal(this.state.suppliers.find(s => s.id == e.target.dataset.id)); if (e.target.matches('.btn-delete-supplier')) this.showAlert(this.t('confirmDeleteSupplier'), () => { this.state.suppliers = this.state.suppliers.filter(s => s.id != e.target.dataset.id); this.saveDataToFirestore(); this.renderSupplierTable(); }, true); }); tbody.addEventListener('change', e => { if (e.target.matches('.supplier-status-select')) { const supplierId = e.target.dataset.id; const newStatus = e.target.value; const supplier = this.state.suppliers.find(s => s.id == supplierId); if (supplier) { supplier.status = newStatus; this.saveDataToFirestore(); } } }); },
-    showSupplierModal(s = null) { const isEdit = s !== null, t = isEdit ? 'editSupplier' : 'addSupplier', statusOptions = ['draft', 'delivery', 'complete']; document.getElementById('modals-container').innerHTML = `<div id="supplier-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-2xl"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="supplier-form"><input type="hidden" name="id" value="${isEdit?s.id:''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input name="name" placeholder="${this.t('supplierName')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?this.sanitizeInput(s.name):''}"><input name="contact" placeholder="${this.t('contactInfo')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?this.sanitizeInput(s.contact):''}"></div></form><div class="mt-6 border-t border-slate-600 pt-4"><h3 class="font-bold text-lg mb-2">${this.t('addOrder')}</h3><form id="add-order-form"><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><input name="amount" type="number" step="0.01" placeholder="${this.t('orderAmount')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required><textarea name="items" placeholder="${this.t('itemsList')}" class="md:col-span-2 w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" rows="2"></textarea></div><button type="submit" class="mt-2 px-4 py-2 bg-green-600 text-white rounded">${this.t('addOrder')}</button></form></div><div class="mt-6 border-t border-slate-600 pt-4"><h3 class="font-bold text-lg mb-2">${this.t('orderHistory')}</h3><div id="order-history" class="space-y-2 max-h-48 overflow-y-auto"></div></div><div class="flex justify-end mt-6"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="button" id="save-supplier-changes" class="px-4 py-2 bg-indigo-600 text-white rounded">${this.t('saveChanges')}</button></div></div></div>`; const renderOrderHistory = () => { const historyDiv = document.getElementById('order-history'); if(!s || !s.orders || s.orders.length === 0){ historyDiv.innerHTML = `<p class="text-gray-400 text-sm">${this.t('noOrders')}</p>`; return; } historyDiv.innerHTML = s.orders.map(o => `<div class="p-2 bg-slate-700 rounded text-sm"><div class="flex justify-between font-bold"><span>${o.date}</span><span>${this.formatCurrency(o.amount)}</span></div><div class="mt-1 text-xs text-gray-300 whitespace-pre-wrap">${o.items}</div></div>`).join(''); }; if(isEdit) renderOrderHistory(); document.getElementById('supplier-modal').addEventListener('click', e => { if (e.target.id === 'supplier-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('add-order-form').addEventListener('submit', e => { e.preventDefault(); const orderData = Object.fromEntries(new FormData(e.target).entries()); if(!s.orders) s.orders = []; s.orders.unshift({id: Date.now(), date: this.formatDate(new Date()), amount: parseFloat(orderData.amount), items: orderData.items }); const newExpense = { id: Date.now() + 1, type: 'expense', date: this.formatDate(new Date()), description: `Stock order from ${s.name}`, amount: parseFloat(orderData.amount), isStockOrder: true }; this.state.transactions.push(newExpense); this.saveDataToFirestore(); renderOrderHistory(); e.target.reset(); }); document.getElementById('save-supplier-changes').addEventListener('click', () => { const d = Object.fromEntries(new FormData(document.getElementById('supplier-form')).entries()); document.getElementById('modals-container').innerHTML = ''; if(isEdit){ const i=this.state.suppliers.findIndex(sup=>sup.id==d.id); this.state.suppliers[i]={...s, ...d}; } else { d.id=Date.now(); d.orders = []; d.status='draft'; this.state.suppliers.push(d); } this.saveDataToFirestore(); this.renderSupplierTable(); }); },
+    showSupplierModal(s = null) { const isEdit = s !== null, t = isEdit ? 'editSupplier' : 'addSupplier'; document.getElementById('modals-container').innerHTML = `<div id="supplier-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"><div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-2xl"><h2 class="text-2xl font-bold mb-4">${this.t(t)}</h2><form id="supplier-form"><input type="hidden" name="id" value="${isEdit?s.id:''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input name="name" placeholder="${this.t('supplierName')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?this.sanitizeInput(s.name):''}"><input name="contact" placeholder="${this.t('contactInfo')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required value="${isEdit?this.sanitizeInput(s.contact):''}"></div></form><div class="mt-6 border-t border-slate-600 pt-4"><h3 class="font-bold text-lg mb-2">${this.t('addOrder')}</h3><form id="add-order-form"><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><input name="amount" type="number" step="0.01" placeholder="${this.t('orderAmount')}" class="w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" required><textarea name="items" placeholder="${this.t('itemsList')}" class="md:col-span-2 w-full p-2 border dark:border-slate-600 bg-white dark:bg-slate-700 rounded" rows="2"></textarea></div><button type="submit" class="mt-2 px-4 py-2 bg-green-600 text-white rounded">${this.t('addOrder')}</button></form></div><div class="mt-6 border-t border-slate-600 pt-4"><h3 class="font-bold text-lg mb-2">${this.t('orderHistory')}</h3><div id="order-history" class="space-y-2 max-h-48 overflow-y-auto"></div></div><div class="flex justify-end mt-6"><button type="button" class="btn-close-modal px-4 py-2 bg-gray-300 dark:bg-slate-600 rounded mr-2">${this.t('cancelModal')}</button><button type="button" id="save-supplier-changes" class="px-4 py-2 bg-indigo-600 text-white rounded">${this.t('saveChanges')}</button></div></div></div>`; const renderOrderHistory = () => { const historyDiv = document.getElementById('order-history'); if(!s || !s.orders || s.orders.length === 0){ historyDiv.innerHTML = `<p class="text-gray-400 text-sm">${this.t('noOrders')}</p>`; return; } historyDiv.innerHTML = s.orders.map(o => `<div class="p-2 bg-slate-700 rounded text-sm"><div class="flex justify-between font-bold"><span>${o.date}</span><span>${this.formatCurrency(o.amount)}</span></div><div class="mt-1 text-xs text-gray-300 whitespace-pre-wrap">${o.items}</div></div>`).join(''); }; if(isEdit) renderOrderHistory(); document.getElementById('supplier-modal').addEventListener('click', e => { if (e.target.id === 'supplier-modal' || e.target.closest('.btn-close-modal')) document.getElementById('modals-container').innerHTML = ''; }); document.getElementById('add-order-form').addEventListener('submit', e => { e.preventDefault(); const orderData = Object.fromEntries(new FormData(e.target).entries()); if(!s.orders) s.orders = []; s.orders.unshift({id: Date.now(), date: this.formatDate(new Date()), amount: parseFloat(orderData.amount), items: orderData.items }); const newExpense = { id: Date.now() + 1, type: 'expense', date: this.formatDate(new Date()), description: `Stock order from ${s.name}`, amount: parseFloat(orderData.amount), isStockOrder: true }; this.state.transactions.push(newExpense); this.saveDataToFirestore(); renderOrderHistory(); e.target.reset(); }); document.getElementById('save-supplier-changes').addEventListener('click', () => { const d = Object.fromEntries(new FormData(document.getElementById('supplier-form')).entries()); document.getElementById('modals-container').innerHTML = ''; if(isEdit){ const i=this.state.suppliers.findIndex(sup=>sup.id==d.id); this.state.suppliers[i]={...s, ...d}; } else { d.id=Date.now(); d.orders = []; d.status='draft'; this.state.suppliers.push(d); } this.saveDataToFirestore(); this.renderSupplierTable(); }); },
 };
 document.addEventListener('DOMContentLoaded', () => App.init());
 </script>
